@@ -2174,7 +2174,12 @@
       },
       "referralCode": "Referral Code (Optional)",
       "referralCodePlaceholder": "e.g. JOHN123",
-      "referralCodeNote": "Got a referral code from a friend? Enter it here for bonus points."
+      "referralCodeNote": "Got a referral code from a friend? Enter it here for bonus points.",
+      "agreeToTerms": "I agree to the",
+      "termsOfService": "Terms of Service",
+      "and": "and",
+      "privacyPolicy": "Privacy Policy",
+      "termsRequired": "You must agree to the terms and conditions to continue"
     },
     "forgotPassword": {
       "title": "Forgot Password",

@@ -62,6 +62,7 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [agreeToTerms, setAgreeToTerms] = useState(false);
 
   const passwordStrength = useMemo(() => getPasswordStrength(formData.password), [formData.password]);
 
@@ -83,6 +84,12 @@ export default function RegisterPage() {
 
     if (formData.password !== formData.confirmPassword) {
       setError(t('auth.register.errorRegister'));
+      setLoading(false);
+      return;
+    }
+
+    if (!agreeToTerms) {
+      setError(t('auth.register.termsRequired'));
       setLoading(false);
       return;
     }
@@ -336,6 +343,26 @@ export default function RegisterPage() {
                 {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
             </div>
+          </div>
+
+          <div className="flex items-start gap-3">
+            <input
+              type="checkbox"
+              id="agreeToTerms"
+              checked={agreeToTerms}
+              onChange={(e) => setAgreeToTerms(e.target.checked)}
+              className="mt-1 h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-800 cursor-pointer"
+            />
+            <label htmlFor="agreeToTerms" className="text-sm text-gray-600 dark:text-gray-400 cursor-pointer">
+              {t('auth.register.agreeToTerms')}{' '}
+              <Link href="/terms-of-service" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors">
+                {t('auth.register.termsOfService')}
+              </Link>
+              {' '}{t('auth.register.and')}{' '}
+              <Link href="/privacy-policy" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors">
+                {t('auth.register.privacyPolicy')}
+              </Link>
+            </label>
           </div>
 
           <div>

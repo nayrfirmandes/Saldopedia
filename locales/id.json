@@ -2174,7 +2174,12 @@
       },
       "referralCode": "Kode Referral (Opsional)",
       "referralCodePlaceholder": "Contoh: BUDI123",
-      "referralCodeNote": "Punya kode referral dari teman? Masukkan di sini untuk bonus poin."
+      "referralCodeNote": "Punya kode referral dari teman? Masukkan di sini untuk bonus poin.",
+      "agreeToTerms": "Saya menyetujui",
+      "termsOfService": "Syarat & Ketentuan",
+      "and": "dan",
+      "privacyPolicy": "Kebijakan Privasi",
+      "termsRequired": "Anda harus menyetujui syarat & ketentuan untuk melanjutkan"
     },
     "forgotPassword": {
       "title": "Lupa Password",
