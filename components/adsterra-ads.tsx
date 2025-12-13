@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 interface AdsterraAdProps {
   className?: string;
@@ -8,34 +9,50 @@ interface AdsterraAdProps {
 
 export function AdsterraBanner({ className = '' }: AdsterraAdProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const loadedRef = useRef(false);
+  const pathname = usePathname();
+  const [adKey, setAdKey] = useState(0);
 
   useEffect(() => {
-    if (loadedRef.current || !containerRef.current) return;
-    loadedRef.current = true;
+    setAdKey(prev => prev + 1);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    
+    containerRef.current.innerHTML = '';
+    
+    const adContainer = document.createElement('div');
+    adContainer.id = `container-529af12d02adb9db6e94621e312ae8aa-${adKey}`;
+    containerRef.current.appendChild(adContainer);
 
     const script = document.createElement('script');
     script.async = true;
     script.setAttribute('data-cfasync', 'false');
     script.src = 'https://pl26518765.effectivegatecpm.com/529af12d02adb9db6e94621e312ae8aa/invoke.js';
     containerRef.current.appendChild(script);
-  }, []);
+
+    return () => {
+      if (containerRef.current) {
+        containerRef.current.innerHTML = '';
+      }
+    };
+  }, [adKey]);
 
   return (
     <div className={className}>
-      <div ref={containerRef}>
-        <div id="container-529af12d02adb9db6e94621e312ae8aa"></div>
-      </div>
+      <div ref={containerRef} key={adKey}></div>
     </div>
   );
 }
 
 export function AdsterraSocialBar() {
-  const loadedRef = useRef(false);
+  const pathname = usePathname();
 
   useEffect(() => {
-    if (loadedRef.current) return;
-    loadedRef.current = true;
+    const existingScript = document.querySelector('script[src*="357cd0fa4cec043e603c368bf96de678"]');
+    if (existingScript) {
+      existingScript.remove();
+    }
 
     const script = document.createElement('script');
     script.type = 'text/javascript';
@@ -47,17 +64,17 @@ export function AdsterraSocialBar() {
         script.parentNode.removeChild(script);
       }
     };
-  }, []);
+  }, [pathname]);
 
   return null;
 }
 
 export function AdsterraPopunder() {
-  const loadedRef = useRef(false);
+  const pathname = usePathname();
 
   useEffect(() => {
-    if (loadedRef.current) return;
-    loadedRef.current = true;
+    const existingScript = document.querySelector('script[src*="26ff720d464c07e143ac8dc9519b72c0"]');
+    if (existingScript) return;
 
     const script = document.createElement('script');
     script.type = 'text/javascript';
@@ -69,7 +86,7 @@ export function AdsterraPopunder() {
         script.parentNode.removeChild(script);
       }
     };
-  }, []);
+  }, [pathname]);
 
   return null;
 }
