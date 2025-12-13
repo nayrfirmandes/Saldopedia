@@ -320,24 +320,15 @@ export default function CryptoContent() {
               <Accordion items={faqData} />
             </div>
 
-            <div className="mx-auto mt-12 max-w-3xl">
-              <h2 className="mb-4 text-center text-2xl font-bold dark:text-gray-100">
-                {t("cryptoProductPage.relatedLinks.title")}
-              </h2>
-              <div className="grid gap-3 md:grid-cols-2">
-                <Link href="/cryptocurrencies" className="flex items-center rounded-lg border border-gray-200 bg-white p-4 transition-all hover:border-orange-300 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:hover:border-orange-500/50">
-                  <span className="text-gray-700 dark:text-gray-300">{t("cryptoProductPage.relatedLinks.allCrypto")}</span>
-                </Link>
-                <Link href="/calculator" className="flex items-center rounded-lg border border-gray-200 bg-white p-4 transition-all hover:border-orange-300 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:hover:border-orange-500/50">
-                  <span className="text-gray-700 dark:text-gray-300">{t("cryptoProductPage.relatedLinks.calculator")}</span>
-                </Link>
-                <Link href="/documentation/cryptocurrency" className="flex items-center rounded-lg border border-gray-200 bg-white p-4 transition-all hover:border-orange-300 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:hover:border-orange-500/50">
-                  <span className="text-gray-700 dark:text-gray-300">{t("cryptoProductPage.relatedLinks.guide")}</span>
-                </Link>
-                <Link href="/blog/cara-membeli-cryptocurrency-untuk-pemula" className="flex items-center rounded-lg border border-gray-200 bg-white p-4 transition-all hover:border-orange-300 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:hover:border-orange-500/50">
-                  <span className="text-gray-700 dark:text-gray-300">{t("cryptoProductPage.relatedLinks.beginnerGuide")}</span>
-                </Link>
-              </div>
+            <div className="mx-auto mt-8 max-w-3xl text-center text-sm">
+              <span className="text-gray-500 dark:text-gray-400">{t("cryptoProductPage.relatedLinks.title")}: </span>
+              <Link href="/cryptocurrencies" className="text-blue-600 hover:text-blue-700 hover:underline dark:text-blue-400 dark:hover:text-blue-300">{t("cryptoProductPage.relatedLinks.allCrypto")}</Link>
+              <span className="mx-2 text-gray-400">|</span>
+              <Link href="/calculator" className="text-blue-600 hover:text-blue-700 hover:underline dark:text-blue-400 dark:hover:text-blue-300">{t("cryptoProductPage.relatedLinks.calculator")}</Link>
+              <span className="mx-2 text-gray-400">|</span>
+              <Link href="/documentation/cryptocurrency" className="text-blue-600 hover:text-blue-700 hover:underline dark:text-blue-400 dark:hover:text-blue-300">{t("cryptoProductPage.relatedLinks.guide")}</Link>
+              <span className="mx-2 text-gray-400">|</span>
+              <Link href="/blog/cara-membeli-cryptocurrency-untuk-pemula" className="text-blue-600 hover:text-blue-700 hover:underline dark:text-blue-400 dark:hover:text-blue-300">{t("cryptoProductPage.relatedLinks.beginnerGuide")}</Link>
             </div>
           </div>
         </div>
