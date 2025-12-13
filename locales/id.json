@@ -173,6 +173,13 @@
       "down": "Sistem tidak tersedia"
     }
   },
+  "common": {
+    "relatedLinks": "Halaman Terkait",
+    "privacyPolicy": "Kebijakan Privasi",
+    "support": "Pusat Bantuan",
+    "documentation": "Dokumentasi",
+    "aboutUs": "Tentang Kami"
+  },
   "statusPage": {
     "title": "Status Sistem",
     "subtitle": "Pantau status layanan Saldopedia secara realtime",

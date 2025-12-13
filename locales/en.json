@@ -173,6 +173,13 @@
       "down": "System unavailable"
     }
   },
+  "common": {
+    "relatedLinks": "Related Pages",
+    "privacyPolicy": "Privacy Policy",
+    "support": "Support Center",
+    "documentation": "Documentation",
+    "aboutUs": "About Us"
+  },
   "statusPage": {
     "title": "System Status",
     "subtitle": "Monitor Saldopedia service status in realtime",
