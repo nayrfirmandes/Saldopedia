@@ -2,6 +2,7 @@
 
 import PageIllustration from "@/components/page-illustration";
 import { useLanguage } from "@/contexts/language-context";
+import Link from "next/link";
 
 export default function CookiePolicy() {
   const { t } = useLanguage();
@@ -36,7 +37,14 @@ export default function CookiePolicy() {
               <h2>{t("cookiePolicy.section1.title")}</h2>
               <p>{t("cookiePolicy.section1.p1")}</p>
               <p>{t("cookiePolicy.section1.p2")}</p>
-              <p>{t("cookiePolicy.section1.p3")}</p>
+              <p>
+                {t("cookiePolicy.section1.p3")}{" "}
+                {t("cookiePolicy.section1.privacyLink") || "Kebijakan ini melengkapi"}{" "}
+                <Link href="/privacy-policy" className="text-blue-600 hover:text-blue-700 hover:underline dark:text-blue-400 dark:hover:text-blue-300">
+                  {t("common.privacyPolicy") || "Kebijakan Privasi"}
+                </Link>{" "}
+                {t("cookiePolicy.section1.privacyLinkEnd") || "kami."}
+              </p>
 
               {/* Section 2: What Are Cookies */}
               <h2>{t("cookiePolicy.section2.title")}</h2>
@@ -282,6 +290,18 @@ export default function CookiePolicy() {
                 <li>{t("cookiePolicy.section10.hours")}</li>
                 <li>{t("cookiePolicy.section10.response")}</li>
               </ul>
+
+              <p className="mt-6">
+                {t("cookiePolicy.relatedInfo.text") || "Lihat juga"}{" "}
+                <Link href="/privacy-policy" className="text-blue-600 hover:text-blue-700 hover:underline dark:text-blue-400 dark:hover:text-blue-300">
+                  {t("common.privacyPolicy") || "Kebijakan Privasi"}
+                </Link>{" "}
+                {t("cookiePolicy.relatedInfo.and") || "dan"}{" "}
+                <Link href="/terms-of-service" className="text-blue-600 hover:text-blue-700 hover:underline dark:text-blue-400 dark:hover:text-blue-300">
+                  {t("common.termsOfService") || "Syarat dan Ketentuan"}
+                </Link>{" "}
+                {t("cookiePolicy.relatedInfo.kami") || "kami untuk informasi lengkap."}
+              </p>
 
               <hr className="my-8" />
 

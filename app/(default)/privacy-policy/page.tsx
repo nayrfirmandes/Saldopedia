@@ -37,7 +37,14 @@ export default function PrivacyPolicy() {
               <h2>{t("privacyPolicy.section1.title")}</h2>
               <p>{t("privacyPolicy.section1.p1")}</p>
               <p>{t("privacyPolicy.section1.p2")}</p>
-              <p>{t("privacyPolicy.section1.p3")}</p>
+              <p>
+                {t("privacyPolicy.section1.p3")}{" "}
+                {t("privacyPolicy.section1.termsLink") || "Kebijakan ini merupakan bagian dari"}{" "}
+                <Link href="/terms-of-service" className="text-blue-600 hover:text-blue-700 hover:underline dark:text-blue-400 dark:hover:text-blue-300">
+                  {t("common.termsOfService") || "Syarat dan Ketentuan"}
+                </Link>{" "}
+                {t("privacyPolicy.section1.termsLinkEnd") || "kami."}
+              </p>
 
               {/* Section 2: Information We Collect */}
               <h2>{t("privacyPolicy.section2.title")}</h2>
@@ -344,6 +351,18 @@ export default function PrivacyPolicy() {
                   <strong>{t("privacyPolicy.section14.hours")}</strong> {t("privacyPolicy.section14.hoursValue")}
                 </li>
               </ul>
+
+              <p className="mt-6">
+                {t("privacyPolicy.relatedInfo.text") || "Lihat juga"}{" "}
+                <Link href="/terms-of-service" className="text-blue-600 hover:text-blue-700 hover:underline dark:text-blue-400 dark:hover:text-blue-300">
+                  {t("common.termsOfService") || "Syarat dan Ketentuan"}
+                </Link>{" "}
+                {t("privacyPolicy.relatedInfo.and") || "dan"}{" "}
+                <Link href="/cookie-policy" className="text-blue-600 hover:text-blue-700 hover:underline dark:text-blue-400 dark:hover:text-blue-300">
+                  {t("common.cookiePolicy") || "Kebijakan Cookie"}
+                </Link>{" "}
+                {t("privacyPolicy.relatedInfo.kami") || "kami untuk informasi lengkap."}
+              </p>
 
               <hr className="my-8" />
 
