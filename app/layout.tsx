@@ -103,15 +103,15 @@ export const metadata = {
   },
   icons: {
     icon: [
-      { url: '/favicon.png', sizes: '32x32', type: 'image/png' },
-      { url: '/icon.png', sizes: '512x512', type: 'image/png' },
+      { url: '/favicon.png?v=2', sizes: '32x32', type: 'image/png' },
+      { url: '/icon.png?v=2', sizes: '512x512', type: 'image/png' },
     ],
-    shortcut: '/favicon.png',
+    shortcut: '/favicon.png?v=2',
     apple: [
-      { url: '/apple-icon.png', sizes: '180x180', type: 'image/png' },
+      { url: '/apple-icon.png?v=2', sizes: '180x180', type: 'image/png' },
     ],
     other: [
-      { rel: 'mask-icon', url: '/favicon.png', color: '#2563eb' },
+      { rel: 'mask-icon', url: '/favicon.png?v=2', color: '#2563eb' },
     ],
   },
   robots: {
@@ -179,9 +179,9 @@ export default function RootLayout({
         <link rel="alternate" hrefLang="id" href="https://saldopedia.com" />
         <link rel="alternate" hrefLang="en" href="https://saldopedia.com" />
         <link rel="alternate" hrefLang="x-default" href="https://saldopedia.com" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
-        <link rel="icon" type="image/png" sizes="512x512" href="/icon.png" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png?v=2" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/icon.png?v=2" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon.png?v=2" />
         <link
           rel="preconnect"
           href="https://api.coingecko.com"

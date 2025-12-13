@@ -15,25 +15,25 @@ export default function manifest(): MetadataRoute.Manifest {
     categories: ['finance', 'business'],
     icons: [
       {
-        src: '/favicon.png',
+        src: '/favicon.png?v=2',
         sizes: '32x32',
         type: 'image/png',
         purpose: 'any',
       },
       {
-        src: '/apple-icon.png',
+        src: '/apple-icon.png?v=2',
         sizes: '180x180',
         type: 'image/png',
         purpose: 'any',
       },
       {
-        src: '/images/saldopedia-logo.png',
+        src: '/images/saldopedia-logo.png?v=2',
         sizes: '192x192',
         type: 'image/png',
         purpose: 'maskable',
       },
       {
-        src: '/icon.png',
+        src: '/icon.png?v=2',
         sizes: '512x512',
         type: 'image/png',
         purpose: 'any',
