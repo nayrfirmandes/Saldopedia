@@ -4,7 +4,7 @@ import { useState, FormEvent, useRef, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Logo from '@/components/ui/logo';
-import RegisterLoading from './loading';
+import { usePageLoading } from '@/components/page-transition-loading';
 import ReCaptcha, { ReCaptchaRef } from '@/components/ui/recaptcha';
 import RecaptchaNotice from '@/components/ui/recaptcha-notice';
 import { AnimateOnScroll } from '@/lib/use-animate-on-scroll';
@@ -52,7 +52,7 @@ export default function RegisterPage() {
   const referralParam = searchParams.get('ref');
   
   const [step, setStep] = useState(1);
-  const [stepLoading, setStepLoading] = useState(false);
+  const { showLoading } = usePageLoading();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -188,17 +188,15 @@ export default function RegisterPage() {
     setError('');
     
     if (step === 1 && validateStep1()) {
-      setStepLoading(true);
+      showLoading();
       setTimeout(() => {
         setStep(2);
-        setStepLoading(false);
-      }, 400);
+      }, 300);
     } else if (step === 2 && validateStep2()) {
-      setStepLoading(true);
+      showLoading();
       setTimeout(() => {
         setStep(3);
-        setStepLoading(false);
-      }, 400);
+      }, 300);
     }
   };
 
@@ -283,10 +281,6 @@ export default function RegisterPage() {
         </AnimateOnScroll>
       </div>
     );
-  }
-
-  if (stepLoading) {
-    return <RegisterLoading />;
   }
 
   return (
