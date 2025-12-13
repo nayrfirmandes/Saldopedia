@@ -85,7 +85,11 @@ function AccordionSingle({
         className="text-sm text-gray-600 dark:text-gray-300"
       >
         <div>
-          <p className="px-4 pb-3">{children}</p>
+          {typeof children === 'string' ? (
+            <p className="px-4 pb-3 [&_a]:text-blue-600 [&_a]:underline hover:[&_a]:text-blue-700 dark:[&_a]:text-blue-400 dark:hover:[&_a]:text-blue-300" dangerouslySetInnerHTML={{ __html: children }} />
+          ) : (
+            <p className="px-4 pb-3">{children}</p>
+          )}
         </div>
       </div>
     </div>
