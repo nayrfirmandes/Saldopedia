@@ -2237,7 +2237,11 @@
         "optional": "opsional",
         "nameRequired": "Nama lengkap harus diisi",
         "emailRequired": "Email harus diisi",
-        "emailInvalid": "Format email tidak valid"
+        "emailInvalid": "Format email tidak valid",
+        "checkingEmail": "Memeriksa email...",
+        "emailTaken": "Email sudah terdaftar",
+        "checkingPhone": "Memeriksa nomor...",
+        "phoneTaken": "Nomor telepon sudah terdaftar"
       }
     },
     "forgotPassword": {

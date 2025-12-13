@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, FormEvent, useRef, useMemo } from 'react';
+import { useState, FormEvent, useRef, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Logo from '@/components/ui/logo';
@@ -8,7 +8,7 @@ import ReCaptcha, { ReCaptchaRef } from '@/components/ui/recaptcha';
 import RecaptchaNotice from '@/components/ui/recaptcha-notice';
 import { AnimateOnScroll } from '@/lib/use-animate-on-scroll';
 import { useLanguage } from '@/contexts/language-context';
-import { Check, X, Eye, EyeOff, ArrowRight } from 'lucide-react';
+import { Check, X, Eye, EyeOff, ArrowRight, Loader2 } from 'lucide-react';
 
 function getPasswordStrength(password: string) {
   const checks = {
@@ -66,6 +66,13 @@ export default function RegisterPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
 
+  const [emailChecking, setEmailChecking] = useState(false);
+  const [emailError, setEmailError] = useState('');
+  const [phoneChecking, setPhoneChecking] = useState(false);
+  const [phoneError, setPhoneError] = useState('');
+  const emailCheckTimeout = useRef<NodeJS.Timeout | null>(null);
+  const phoneCheckTimeout = useRef<NodeJS.Timeout | null>(null);
+
   const passwordStrength = useMemo(() => getPasswordStrength(formData.password), [formData.password]);
 
   const strengthLabels: Record<string, string> = {
@@ -75,8 +82,67 @@ export default function RegisterPage() {
     strong: t('auth.register.passwordStrength.strong'),
   };
 
+  const checkEmailAvailability = useCallback(async (email: string) => {
+    if (!email.trim()) return;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) return;
+    
+    setEmailChecking(true);
+    setEmailError('');
+    try {
+      const res = await fetch('/api/auth/check-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (!data.available) {
+        setEmailError(data.error || t('auth.register.step.emailTaken'));
+      }
+    } catch (err) {
+      console.error('Email check error:', err);
+    } finally {
+      setEmailChecking(false);
+    }
+  }, [t]);
+
+  const checkPhoneAvailability = useCallback(async (phone: string) => {
+    if (!phone.trim()) return;
+    
+    setPhoneChecking(true);
+    setPhoneError('');
+    try {
+      const res = await fetch('/api/auth/check-phone', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone }),
+      });
+      const data = await res.json();
+      if (!data.available) {
+        setPhoneError(data.error || t('auth.register.step.phoneTaken'));
+      }
+    } catch (err) {
+      console.error('Phone check error:', err);
+    } finally {
+      setPhoneChecking(false);
+    }
+  }, [t]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    if (name === 'email') {
+      setEmailError('');
+      if (emailCheckTimeout.current) clearTimeout(emailCheckTimeout.current);
+      emailCheckTimeout.current = setTimeout(() => checkEmailAvailability(value), 500);
+    }
+    
+    if (name === 'phone') {
+      setPhoneError('');
+      if (phoneCheckTimeout.current) clearTimeout(phoneCheckTimeout.current);
+      phoneCheckTimeout.current = setTimeout(() => checkPhoneAvailability(value), 500);
+    }
   };
 
   const validateStep1 = () => {
@@ -93,10 +159,26 @@ export default function RegisterPage() {
       setError(t('auth.register.step.emailInvalid'));
       return false;
     }
+    if (emailError) {
+      setError(emailError);
+      return false;
+    }
+    if (emailChecking) {
+      setError(t('auth.register.step.checkingEmail'));
+      return false;
+    }
     return true;
   };
 
   const validateStep2 = () => {
+    if (phoneError) {
+      setError(phoneError);
+      return false;
+    }
+    if (phoneChecking) {
+      setError(t('auth.register.step.checkingPhone'));
+      return false;
+    }
     return true;
   };
 
@@ -243,22 +325,40 @@ export default function RegisterPage() {
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   {t('auth.register.email')}
                 </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder={t('auth.register.emailPlaceholder')}
-                  className="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all text-base"
-                  required
-                />
+                <div className="relative">
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder={t('auth.register.emailPlaceholder')}
+                    className={`w-full px-3 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all text-base ${
+                      emailError ? 'border-red-500 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'
+                    }`}
+                    required
+                  />
+                  {emailChecking && (
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      <Loader2 className="w-4 h-4 animate-spin text-gray-400" />
+                    </div>
+                  )}
+                </div>
+                {emailChecking && (
+                  <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+                    {t('auth.register.step.checkingEmail')}
+                  </p>
+                )}
+                {emailError && !emailChecking && (
+                  <p className="mt-1.5 text-xs text-red-600 dark:text-red-400">{emailError}</p>
+                )}
               </div>
 
               <button
                 type="button"
                 onClick={handleNextStep}
-                className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-medium rounded-lg transition-all text-sm flex items-center justify-center gap-2"
+                disabled={emailChecking || !!emailError}
+                className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-medium rounded-lg transition-all text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {t('auth.register.step.next')}
                 <ArrowRight className="w-4 h-4" />
@@ -318,16 +418,33 @@ export default function RegisterPage() {
                   {t('auth.register.phone')}
                   <span className="ml-1 text-gray-400 font-normal">({t('auth.register.step.optional')})</span>
                 </label>
-                <input
-                  type="tel"
-                  id="phone"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  placeholder={t('auth.register.phonePlaceholder')}
-                  className="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all text-base"
-                  autoFocus
-                />
+                <div className="relative">
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    placeholder={t('auth.register.phonePlaceholder')}
+                    className={`w-full px-3 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all text-base ${
+                      phoneError ? 'border-red-500 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'
+                    }`}
+                    autoFocus
+                  />
+                  {phoneChecking && (
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      <Loader2 className="w-4 h-4 animate-spin text-gray-400" />
+                    </div>
+                  )}
+                </div>
+                {phoneChecking && (
+                  <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+                    {t('auth.register.step.checkingPhone')}
+                  </p>
+                )}
+                {phoneError && !phoneChecking && (
+                  <p className="mt-1.5 text-xs text-red-600 dark:text-red-400">{phoneError}</p>
+                )}
               </div>
 
               <div>
@@ -353,7 +470,8 @@ export default function RegisterPage() {
               <button
                 type="button"
                 onClick={handleNextStep}
-                className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-medium rounded-lg transition-all text-sm flex items-center justify-center gap-2"
+                disabled={phoneChecking || !!phoneError}
+                className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-medium rounded-lg transition-all text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {t('auth.register.step.next')}
                 <ArrowRight className="w-4 h-4" />
@@ -488,8 +606,9 @@ export default function RegisterPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm flex items-center justify-center gap-2"
               >
+                {loading && <Loader2 className="w-4 h-4 animate-spin" />}
                 {loading ? t('auth.register.registering') : t('auth.register.registerButton')}
               </button>
 

@@ -2237,7 +2237,11 @@
         "optional": "optional",
         "nameRequired": "Full name is required",
         "emailRequired": "Email is required",
-        "emailInvalid": "Invalid email format"
+        "emailInvalid": "Invalid email format",
+        "checkingEmail": "Checking email...",
+        "emailTaken": "Email already registered",
+        "checkingPhone": "Checking number...",
+        "phoneTaken": "Phone number already registered"
       }
     },
     "forgotPassword": {
