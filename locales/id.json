@@ -1327,7 +1327,9 @@
       "title": "1. Pengantar dan Ruang Lingkup",
       "p1": "Kebijakan Cookie ini merupakan bagian integral dari Kebijakan Privasi Saldopedia dan menjelaskan secara detail tentang cookie dan teknologi pelacakan serupa yang digunakan di website kami. Kebijakan ini berlaku untuk semua pengunjung dan pengguna website Saldopedia, termasuk halaman publik, dashboard pengguna, dan seluruh subdomain yang dioperasikan oleh Saldopedia.",
       "p2": "Dengan terus menggunakan website kami setelah membaca Kebijakan Cookie ini, Anda menyatakan pemahaman dan persetujuan terhadap penggunaan cookie sebagaimana dijelaskan dalam dokumen ini. Jika Anda tidak menyetujui penggunaan cookie tertentu, Anda memiliki opsi untuk mengontrol dan menonaktifkan cookie tersebut melalui pengaturan browser atau preferensi cookie di website kami.",
-      "p3": "Kami secara berkala memperbarui Kebijakan Cookie ini untuk mencerminkan perubahan dalam teknologi, praktik kami, atau persyaratan hukum. Kami menyarankan Anda untuk meninjau kebijakan ini secara berkala untuk tetap mendapatkan informasi terkini tentang bagaimana kami menggunakan cookie."
+      "p3": "Kami secara berkala memperbarui Kebijakan Cookie ini untuk mencerminkan perubahan dalam teknologi, praktik kami, atau persyaratan hukum. Kami menyarankan Anda untuk meninjau kebijakan ini secara berkala untuk tetap mendapatkan informasi terkini tentang bagaimana kami menggunakan cookie.",
+      "privacyLink": "Kebijakan ini melengkapi",
+      "privacyLinkEnd": "kami."
     },
     "section2": {
       "title": "2. Apa Itu Cookie dan Teknologi Serupa?",
@@ -1534,10 +1536,6 @@
       "text": "Lihat juga",
       "and": "dan",
       "kami": "kami untuk informasi lengkap."
-    },
-    "section1": {
-      "privacyLink": "Kebijakan ini melengkapi",
-      "privacyLinkEnd": "kami."
     }
   },
   "termsOfService": {

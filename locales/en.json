@@ -1327,7 +1327,9 @@
       "title": "1. Introduction and Scope",
       "p1": "This Cookie Policy is an integral part of Saldopedia's Privacy Policy and explains in detail the cookies and similar tracking technologies used on our website. This policy applies to all visitors and users of the Saldopedia website, including public pages, user dashboard, and all subdomains operated by Saldopedia.",
       "p2": "By continuing to use our website after reading this Cookie Policy, you acknowledge understanding and consent to the use of cookies as described in this document. If you do not consent to the use of certain cookies, you have the option to control and disable those cookies through your browser settings or cookie preferences on our website.",
-      "p3": "We periodically update this Cookie Policy to reflect changes in technology, our practices, or legal requirements. We recommend that you review this policy regularly to stay informed about how we use cookies."
+      "p3": "We periodically update this Cookie Policy to reflect changes in technology, our practices, or legal requirements. We recommend that you review this policy regularly to stay informed about how we use cookies.",
+      "privacyLink": "This policy complements our",
+      "privacyLinkEnd": ""
     },
     "section2": {
       "title": "2. What Are Cookies and Similar Technologies?",
@@ -1534,10 +1536,6 @@
       "text": "See also",
       "and": "and",
       "kami": "for complete information."
-    },
-    "section1": {
-      "privacyLink": "This policy complements our",
-      "privacyLinkEnd": ""
     }
   },
   "termsOfService": {
