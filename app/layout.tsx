@@ -176,6 +176,9 @@ export default function RootLayout({
           }}
         />
         <meta name="theme-color" content="#f9fafb" />
+        <link rel="alternate" hrefLang="id" href="https://saldopedia.com" />
+        <link rel="alternate" hrefLang="en" href="https://saldopedia.com" />
+        <link rel="alternate" hrefLang="x-default" href="https://saldopedia.com" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
         <link rel="icon" type="image/png" sizes="512x512" href="/icon.png" />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon.png" />

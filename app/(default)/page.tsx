@@ -15,7 +15,31 @@ export const revalidate = 180;
 
 export const metadata = {
   title: "Saldopedia - Jual Beli Cryptocurrency, PayPal & Skrill Mulai 25 Ribu",
-  description: "Jual beli cryptocurrency eceran, PayPal, dan Skrill mulai 25ribu rupiah. Transaksi mudah via WhatsApp atau form order. Aman, cepat, terpercaya.",
+  description: "Jual beli cryptocurrency eceran, PayPal, dan Skrill mulai Rp 25.000. Beli Bitcoin, USDT, Ethereum tanpa minimal besar. Convert PayPal & Skrill ke Rupiah rate terbaik. Proses 5-15 menit, aman, terpercaya sejak 2020.",
+  keywords: [
+    "jual beli bitcoin eceran",
+    "beli crypto murah",
+    "jual saldo paypal",
+    "tukar skrill ke rupiah",
+    "cryptocurrency indonesia",
+    "beli usdt murah",
+    "exchanger crypto terpercaya",
+    "jual beli crypto tanpa minimal",
+    "convert paypal ke bank",
+    "bitcoin 25 ribu",
+    "crypto eceran indonesia",
+    "paypal exchanger indonesia",
+    "skrill exchanger indonesia"
+  ],
+  alternates: {
+    canonical: "https://saldopedia.com",
+  },
+  openGraph: {
+    title: "Saldopedia - Jual Beli Cryptocurrency, PayPal & Skrill Mulai 25 Ribu",
+    description: "Beli Bitcoin, USDT, Ethereum mulai Rp 25.000. Convert PayPal & Skrill ke Rupiah dengan rate terbaik. Proses 5-15 menit.",
+    url: "https://saldopedia.com",
+    type: "website",
+  },
 };
 
 function TestimonialSkeleton() {

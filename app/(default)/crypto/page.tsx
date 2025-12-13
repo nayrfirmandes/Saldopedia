@@ -1,6 +1,25 @@
 import { Metadata } from "next";
 import CryptoContent from "./crypto-content";
-import { ServiceSchema, BreadcrumbSchema } from "@/components/seo";
+import { ServiceSchema, BreadcrumbSchema, FAQSchema } from "@/components/seo";
+
+const cryptoFaqs = [
+  {
+    question: "Cryptocurrency apa saja yang bisa ditransaksikan?",
+    answer: "Bitcoin (BTC), Ethereum (ETH), USDT, BNB, Solana (SOL), MATIC, dan cryptocurrency populer lainnya. Rate mengikuti harga pasar real-time."
+  },
+  {
+    question: "Berapa minimal transaksi?",
+    answer: "Minimal Rp 25.000 untuk semua cryptocurrency. Cocok untuk pemula yang ingin mulai investasi dengan modal kecil."
+  },
+  {
+    question: "Bagaimana cara mendapatkan rate terbaik?",
+    answer: "Rate kami mengikuti harga pasar global. Beli crypto +5%, jual crypto -5% dari harga pasar. Tanpa biaya tersembunyi."
+  },
+  {
+    question: "Berapa lama proses transaksi?",
+    answer: "Setelah pembayaran dikonfirmasi, crypto dikirim ke wallet Anda dalam 5-15 menit. Aktif 24/7."
+  }
+];
 
 export const metadata: Metadata = {
   title: "Jual Beli Cryptocurrency Eceran - Bitcoin, USDT, Ethereum Mulai 25 Ribu | Saldopedia",
@@ -47,6 +66,7 @@ export default function CryptoPage() {
           { name: "Cryptocurrency", url: "https://saldopedia.com/crypto" }
         ]}
       />
+      <FAQSchema faqs={cryptoFaqs} />
       <CryptoContent />
     </>
   );
