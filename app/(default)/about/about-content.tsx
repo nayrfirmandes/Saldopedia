@@ -136,7 +136,7 @@ export default function AboutContent() {
               <h2 className="mb-2 text-center text-2xl font-bold dark:text-gray-100">{t("aboutPage.services.title")}</h2>
               <p className="mb-6 text-center text-gray-600 dark:text-gray-400">{t("aboutPage.services.subtitle")}</p>
               <div className="grid gap-4 sm:grid-cols-3">
-                <div className="rounded-xl border border-gray-200 bg-white p-5 text-center dark:border-gray-700 dark:bg-gray-800">
+                <Link href="/crypto" className="group rounded-xl border border-gray-200 bg-white p-5 text-center transition-all duration-200 hover:-translate-y-1 hover:border-blue-300 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:hover:border-blue-500">
                   <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center">
                     <Image
                       src="/images/bitcoin-logo.png"
@@ -148,8 +148,8 @@ export default function AboutContent() {
                   </div>
                   <h3 className="mb-2 font-semibold dark:text-gray-100">{t("aboutPage.services.items.crypto.title")}</h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">{t("aboutPage.services.items.crypto.description")}</p>
-                </div>
-                <div className="rounded-xl border border-gray-200 bg-white p-5 text-center dark:border-gray-700 dark:bg-gray-800">
+                </Link>
+                <Link href="/paypal" className="group rounded-xl border border-gray-200 bg-white p-5 text-center transition-all duration-200 hover:-translate-y-1 hover:border-blue-300 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:hover:border-blue-500">
                   <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center">
                     <Image
                       src="/images/paypal-logo.png"
@@ -161,8 +161,8 @@ export default function AboutContent() {
                   </div>
                   <h3 className="mb-2 font-semibold dark:text-gray-100">{t("aboutPage.services.items.paypal.title")}</h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">{t("aboutPage.services.items.paypal.description")}</p>
-                </div>
-                <div className="rounded-xl border border-gray-200 bg-white p-5 text-center dark:border-gray-700 dark:bg-gray-800">
+                </Link>
+                <Link href="/skrill" className="group rounded-xl border border-gray-200 bg-white p-5 text-center transition-all duration-200 hover:-translate-y-1 hover:border-blue-300 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:hover:border-blue-500">
                   <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center">
                     <Image
                       src="/images/skrill-logo.png"
@@ -174,7 +174,7 @@ export default function AboutContent() {
                   </div>
                   <h3 className="mb-2 font-semibold dark:text-gray-100">{t("aboutPage.services.items.skrill.title")}</h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">{t("aboutPage.services.items.skrill.description")}</p>
-                </div>
+                </Link>
               </div>
             </div>
 
