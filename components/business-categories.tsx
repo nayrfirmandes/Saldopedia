@@ -1,204 +1,726 @@
 "use client";
 
-import { useState, memo, useMemo, useEffect, useCallback } from "react";
-import { useLanguage } from "@/contexts/language-context";
+import { useRef, useState, Fragment, useEffect, memo } from "react";
 import Image from "next/image";
-
-interface AssetOption {
-  id: string;
-  symbol: string;
-  name: string;
-  logo: string;
-  category: 'crypto' | 'paypal' | 'skrill';
-}
-
-const ALL_ASSETS: AssetOption[] = [
-  { id: 'bitcoin', symbol: 'BTC', name: 'Bitcoin', logo: '/images/crypto/btc.webp', category: 'crypto' },
-  { id: 'ethereum', symbol: 'ETH', name: 'Ethereum', logo: '/images/crypto/eth.png', category: 'crypto' },
-  { id: 'binancecoin', symbol: 'BNB', name: 'BNB', logo: '/images/crypto/bnb.webp', category: 'crypto' },
-  { id: 'solana', symbol: 'SOL', name: 'Solana', logo: '/images/crypto/sol.webp', category: 'crypto' },
-  { id: 'tether', symbol: 'USDT', name: 'Tether', logo: '/images/crypto/usdt.png', category: 'crypto' },
-  { id: 'the-open-network', symbol: 'TON', name: 'TON', logo: '/images/crypto/ton.webp', category: 'crypto' },
-  { id: 'cardano', symbol: 'ADA', name: 'Cardano', logo: '/images/crypto/ada.png', category: 'crypto' },
-  { id: 'ripple', symbol: 'XRP', name: 'XRP', logo: '/images/crypto/xrp.webp', category: 'crypto' },
-  { id: 'dogecoin', symbol: 'DOGE', name: 'Dogecoin', logo: '/images/crypto/doge.webp', category: 'crypto' },
-  { id: 'tron', symbol: 'TRX', name: 'Tron', logo: '/images/crypto/trx.webp', category: 'crypto' },
-  { id: 'paypal', symbol: 'USD', name: 'PayPal', logo: '/images/paypal-logo.png', category: 'paypal' },
-  { id: 'skrill', symbol: 'USD', name: 'Skrill', logo: '/images/skrill-logo.png', category: 'skrill' },
-];
-
-interface MarketData {
-  [coinId: string]: { idr: number; idr_24h_change: number };
-}
-
-function formatPrice(price: number): string {
-  if (price >= 1000000000) return `Rp ${(price / 1000000000).toFixed(2)}B`;
-  if (price >= 1000000) return `Rp ${(price / 1000000).toFixed(2)}M`;
-  return `Rp ${Math.round(price).toLocaleString('id-ID')}`;
-}
-
-function generateChartPoints(change: number, seed: number): number[] {
-  const pts: number[] = [];
-  const volatility = Math.min(Math.abs(change) * 3, 25);
-  const isPositive = change >= 0;
-  
-  for (let i = 0; i < 48; i++) {
-    const noise = Math.sin(seed + i * 0.5) * volatility + Math.cos(seed * 2 + i * 0.3) * (volatility * 0.5);
-    const trend = isPositive ? (i / 47) * 30 : ((47 - i) / 47) * 30;
-    pts.push(50 + noise + (isPositive ? trend - 15 : -trend + 15));
-  }
-  return pts;
-}
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
+import { Transition } from "@headlessui/react";
+import { useLanguage } from "@/contexts/language-context";
+import { LayoutGrid, Bitcoin, CreditCard, Wallet } from "lucide-react";
 
 function BusinessCategories() {
   const { t } = useLanguage();
-  const [selectedAsset, setSelectedAsset] = useState<AssetOption>(ALL_ASSETS[0]);
-  const [marketData, setMarketData] = useState<MarketData | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  const fetchData = useCallback(async () => {
-    try {
-      const res = await fetch('/api/crypto-rates');
-      const json = await res.json();
-      if (json.success && json.prices) {
-        setMarketData(json.prices);
-      }
-    } catch {
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchData();
-    const interval = setInterval(fetchData, 60000);
-    return () => clearInterval(interval);
-  }, [fetchData]);
-
-  const currentPrice = useMemo(() => {
-    if (selectedAsset.category !== 'crypto') {
-      return selectedAsset.id === 'paypal' ? 14000 : 14000;
-    }
-    return marketData?.[selectedAsset.id]?.idr || 0;
-  }, [selectedAsset, marketData]);
-
-  const change24h = useMemo(() => {
-    if (selectedAsset.category !== 'crypto') return 0;
-    return marketData?.[selectedAsset.id]?.idr_24h_change || 0;
-  }, [selectedAsset, marketData]);
-
-  const isPositive = change24h >= 0;
-  const color = isPositive ? '#22c55e' : '#ef4444';
-
-  const chartPath = useMemo(() => {
-    const seed = selectedAsset.id.charCodeAt(0) * 10 + Math.abs(change24h * 100);
-    const points = generateChartPoints(change24h, seed);
-    
-    const width = 800;
-    const height = 200;
-    const stepX = width / (points.length - 1);
-    
-    let d = `M 0 ${height - (points[0] / 100) * height}`;
-    for (let i = 1; i < points.length; i++) {
-      const x = i * stepX;
-      const y = height - (points[i] / 100) * height;
-      const prevX = (i - 1) * stepX;
-      const prevY = height - (points[i - 1] / 100) * height;
-      const cpX = (prevX + x) / 2;
-      d += ` C ${cpX} ${prevY}, ${cpX} ${y}, ${x} ${y}`;
-    }
-    
-    const areaD = d + ` L ${width} ${height} L 0 ${height} Z`;
-    
-    return { line: d, area: areaD };
-  }, [selectedAsset.id, change24h]);
+  const tabsRef = useRef<HTMLDivElement>(null);
+  const [selectedTab, setSelectedTab] = useState<number>(0);
 
   return (
-    <section className="py-12 md:py-20">
-      <div className="mx-auto max-w-5xl px-4 sm:px-6">
-        <div className="text-center mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            {t('business.title')}
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400 text-sm">
-            {t('business.crypto.description')}
-          </p>
-        </div>
+    <section>
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <div suppressHydrationWarning>
+          <TabGroup selectedIndex={selectedTab} onChange={setSelectedTab}>
+            {/* Buttons */}
+            <div className="flex justify-center">
+              <TabList className="relative mb-8 inline-flex flex-wrap justify-center rounded-xl bg-white dark:bg-gray-800 p-2 shadow-lg shadow-black/[0.03] dark:shadow-gray-900/20 before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit] before:border before:border-transparent before:[background:linear-gradient(var(--color-gray-100),var(--color-gray-200))_border-box] dark:before:[background:linear-gradient(var(--color-gray-700),var(--color-gray-800))_border-box] before:[mask-composite:exclude_!important] before:[mask:linear-gradient(white_0_0)_padding-box,_linear-gradient(white_0_0)] max-[480px]:max-w-[180px]">
+                <Tab as={Fragment}>
+                  <button
+                    className={`ui-focus-visible:outline-none ui-focus-visible:ring ui-focus-visible:ring-blue-300 flex h-8 flex-1 items-center gap-2.5 whitespace-nowrap rounded-lg px-3 text-base font-semibold transition-colors focus-visible:outline-hidden ${selectedTab === 0 ? "bg-gray-800 text-gray-200 dark:bg-blue-500 dark:text-white" : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700/50"}`}
+                  >
+                    <LayoutGrid
+                      className={`${selectedTab === 0 ? "text-gray-400" : "text-gray-500"}`}
+                      size={16}
+                      strokeWidth={2}
+                    />
+                    <span>{t('business.all')}</span>
+                  </button>
+                </Tab>
+                <Tab as={Fragment}>
+                  <button
+                    className={`ui-focus-visible:outline-none ui-focus-visible:ring ui-focus-visible:ring-blue-300 flex h-8 flex-1 items-center gap-2.5 whitespace-nowrap rounded-lg px-3 text-base font-semibold transition-colors focus-visible:outline-hidden ${selectedTab === 1 ? "bg-gray-800 text-gray-200 dark:bg-blue-500 dark:text-white" : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700/50"}`}
+                  >
+                    <Bitcoin
+                      className={`${selectedTab === 1 ? "text-gray-400" : "text-gray-500"}`}
+                      size={16}
+                      strokeWidth={2}
+                    />
+                    <span>{t('business.crypto.title')}</span>
+                  </button>
+                </Tab>
+                <Tab as={Fragment}>
+                  <button
+                    className={`ui-focus-visible:outline-none ui-focus-visible:ring ui-focus-visible:ring-blue-300 flex h-8 flex-1 items-center gap-2.5 whitespace-nowrap rounded-lg px-3 text-base font-semibold transition-colors focus-visible:outline-hidden ${selectedTab === 2 ? "bg-gray-800 text-gray-200 dark:bg-blue-500 dark:text-white" : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700/50"}`}
+                  >
+                    <CreditCard
+                      className={`${selectedTab === 2 ? "text-gray-400" : "text-gray-500"}`}
+                      size={16}
+                      strokeWidth={2}
+                    />
+                    <span>{t('business.paypal.title')}</span>
+                  </button>
+                </Tab>
+                <Tab as={Fragment}>
+                  <button
+                    className={`ui-focus-visible:outline-none ui-focus-visible:ring ui-focus-visible:ring-blue-300 flex h-8 flex-1 items-center gap-2.5 whitespace-nowrap rounded-lg px-3 text-base font-semibold transition-colors focus-visible:outline-hidden ${selectedTab === 3 ? "bg-gray-800 text-gray-200 dark:bg-blue-500 dark:text-white" : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700/50"}`}
+                  >
+                    <Wallet
+                      className={`${selectedTab === 3 ? "text-gray-400" : "text-gray-500"}`}
+                      size={16}
+                      strokeWidth={2}
+                    />
+                    <span>{t('business.skrill.title')}</span>
+                  </button>
+                </Tab>
+              </TabList>
+            </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-          <div className="flex flex-wrap gap-2 p-4 border-b border-gray-100 dark:border-gray-700 overflow-x-auto">
-            {ALL_ASSETS.map((asset) => (
-              <button
-                key={asset.id}
-                onClick={() => setSelectedAsset(asset)}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all shrink-0 ${
-                  selectedAsset.id === asset.id
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                }`}
-              >
-                <Image src={asset.logo} alt={asset.name} width={20} height={20} className="rounded-full" />
-                <span>{asset.symbol}</span>
-              </button>
-            ))}
-          </div>
-
-          <div className="p-6">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-4">
-                <Image src={selectedAsset.logo} alt={selectedAsset.name} width={48} height={48} className="rounded-full" />
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">{selectedAsset.name}</h3>
-                  <span className="text-gray-500 dark:text-gray-400">{selectedAsset.symbol}</span>
+            {/* Tab panels */}
+            <TabPanels className="relative flex h-[324px] items-center justify-center">
+              {/* Small blue dots */}
+              <div className="absolute -z-10">
+                <svg
+                  className="fill-blue-500"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width={164}
+                  height={41}
+                  viewBox="0 0 164 41"
+                  fill="none"
+                >
+                  <circle cx={1} cy={8} r={1} fillOpacity="0.24" />
+                  <circle cx={1} cy={1} r={1} fillOpacity="0.16" />
+                  <circle cx={1} cy={15} r={1} />
+                  <circle cx={1} cy={26} r={1} fillOpacity="0.64" />
+                  <circle cx={1} cy={33} r={1} fillOpacity="0.24" />
+                  <circle cx={8} cy={8} r={1} />
+                  <circle cx={8} cy={15} r={1} />
+                  <circle cx={8} cy={26} r={1} fillOpacity="0.24" />
+                  <circle cx={15} cy={15} r={1} fillOpacity="0.64" />
+                  <circle cx={15} cy={26} r={1} fillOpacity="0.16" />
+                  <circle cx={8} cy={33} r={1} />
+                  <circle cx={1} cy={40} r={1} />
+                  <circle
+                    cx={1}
+                    cy={1}
+                    r={1}
+                    transform="matrix(-1 0 0 1 164 7)"
+                    fillOpacity="0.24"
+                  />
+                  <circle
+                    cx={1}
+                    cy={1}
+                    r={1}
+                    transform="matrix(-1 0 0 1 164 0)"
+                    fillOpacity="0.16"
+                  />
+                  <circle
+                    cx={1}
+                    cy={1}
+                    r={1}
+                    transform="matrix(-1 0 0 1 164 14)"
+                  />
+                  <circle
+                    cx={1}
+                    cy={1}
+                    r={1}
+                    transform="matrix(-1 0 0 1 164 25)"
+                    fillOpacity="0.64"
+                  />
+                  <circle
+                    cx={1}
+                    cy={1}
+                    r={1}
+                    transform="matrix(-1 0 0 1 164 32)"
+                    fillOpacity="0.24"
+                  />
+                  <circle
+                    cx={1}
+                    cy={1}
+                    r={1}
+                    transform="matrix(-1 0 0 1 157 7)"
+                  />
+                  <circle
+                    cx={1}
+                    cy={1}
+                    r={1}
+                    transform="matrix(-1 0 0 1 157 14)"
+                  />
+                  <circle
+                    cx={1}
+                    cy={1}
+                    r={1}
+                    transform="matrix(-1 0 0 1 157 25)"
+                    fillOpacity="0.24"
+                  />
+                  <circle
+                    cx={1}
+                    cy={1}
+                    r={1}
+                    transform="matrix(-1 0 0 1 150 14)"
+                    fillOpacity="0.64"
+                  />
+                  <circle
+                    cx={1}
+                    cy={1}
+                    r={1}
+                    transform="matrix(-1 0 0 1 150 25)"
+                    fillOpacity="0.16"
+                  />
+                  <circle
+                    cx={1}
+                    cy={1}
+                    r={1}
+                    transform="matrix(-1 0 0 1 157 32)"
+                  />
+                  <circle
+                    cx={1}
+                    cy={1}
+                    r={1}
+                    transform="matrix(-1 0 0 1 164 39)"
+                  />
+                </svg>
+              </div>
+              {/* Blue glow */}
+              <div className="absolute -z-10">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width={432}
+                  height={160}
+                  viewBox="0 0 432 160"
+                  fill="none"
+                >
+                  <g opacity="0.6" filter="url(#filter0_f_2044_9)">
+                    <path
+                      className="fill-blue-500"
+                      fillRule="evenodd"
+                      clipRule="evenodd"
+                      d="M80 112C62.3269 112 48 97.6731 48 80C48 62.3269 62.3269 48 80 48C97.6731 48 171 62.3269 171 80C171 97.6731 97.6731 112 80 112ZM352 112C369.673 112 384 97.6731 384 80C384 62.3269 369.673 48 352 48C334.327 48 261 62.3269 261 80C261 97.6731 334.327 112 352 112Z"
+                    />
+                  </g>
+                  <defs>
+                    <filter
+                      id="filter0_f_2044_9"
+                      x={0}
+                      y={0}
+                      width={432}
+                      height={160}
+                      filterUnits="userSpaceOnUse"
+                      colorInterpolationFilters="sRGB"
+                    >
+                      <feFlood floodOpacity={0} result="BackgroundImageFix" />
+                      <feBlend
+                        mode="normal"
+                        in="SourceGraphic"
+                        in2="BackgroundImageFix"
+                        result="shape"
+                      />
+                      <feGaussianBlur
+                        stdDeviation={32}
+                        result="effect1_foregroundBlur_2044_9"
+                      />
+                    </filter>
+                  </defs>
+                </svg>
+              </div>
+              {/* Horizontal lines */}
+              <div className="absolute inset-x-0 top-0 -z-10 h-px bg-linear-to-r from-transparent via-gray-200 to-transparent mix-blend-multiply"></div>
+              <div className="absolute inset-x-0 bottom-0 -z-10 h-px bg-linear-to-r from-transparent via-gray-200 to-transparent mix-blend-multiply"></div>
+              <div className="absolute inset-x-[200px] top-1/2 -z-10 h-px bg-linear-to-r from-transparent via-blue-500/60 to-transparent mix-blend-multiply"></div>
+              <div className="absolute inset-x-0 top-1/2 -z-10 h-px -translate-y-[82px] bg-linear-to-r from-transparent via-gray-200 to-transparent mix-blend-multiply before:absolute before:inset-y-0 before:w-24 before:animate-[line_10s_ease-in-out_infinite_both] before:bg-linear-to-r before:via-blue-500"></div>
+              <div className="absolute inset-x-0 top-1/2 -z-10 h-px translate-y-[82px] bg-linear-to-r from-transparent via-gray-200 to-transparent mix-blend-multiply before:absolute before:inset-y-0 before:w-24 before:animate-[line_10s_ease-in-out_infinite_5s_both] before:bg-linear-to-r before:via-blue-500"></div>
+              {/* Diagonal lines */}
+              <div className="absolute inset-x-[300px] top-1/2 -z-10 h-px rotate-[20deg] bg-linear-to-r from-transparent via-gray-200 to-transparent mix-blend-multiply"></div>
+              <div className="absolute inset-x-[300px] top-1/2 -z-10 h-px -rotate-[20deg] bg-linear-to-r from-transparent via-gray-200 to-transparent mix-blend-multiply"></div>
+              {/* Vertical lines */}
+              <div className="absolute inset-y-0 left-1/2 -z-10 w-px -translate-x-[216px] bg-linear-to-b from-gray-200 to-transparent mix-blend-multiply"></div>
+              <div className="absolute inset-y-0 left-1/2 -z-10 w-px translate-x-[216px] bg-linear-to-t from-gray-200 to-transparent mix-blend-multiply"></div>
+              {/* Logos */}
+              <div className="absolute before:absolute before:-inset-3 before:animate-[spin_3s_linear_infinite] before:rounded-full before:border before:border-transparent before:[background:conic-gradient(from_180deg,transparent,var(--color-blue-500))_border-box] before:[mask-composite:exclude_!important] before:[mask:linear-gradient(white_0_0)_padding-box,_linear-gradient(white_0_0)]">
+                <div className="animate-[breath_8s_ease-in-out_infinite_both]">
+                  <div className="flex h-24 w-24 items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-lg shadow-black/[0.03] dark:shadow-black/40 before:absolute before:inset-0 before:m-[8.334%] before:rounded-[inherit] before:border before:border-gray-700/5 dark:before:border-gray-600/20 before:bg-gray-200/60 dark:before:bg-gray-700/40 before:[mask-image:linear-gradient(to_bottom,black,transparent)] p-2">
+                    <Image
+                      className="relative rounded-full"
+                      src="/images/logo-01.webp"
+                      width={36}
+                      height={36}
+                      alt="Bitcoin"
+                    />
+                  </div>
                 </div>
               </div>
-              
-              <div className="text-right">
-                {loading && selectedAsset.category === 'crypto' ? (
-                  <div className="h-8 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-                ) : (
-                  <>
-                    <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                      {formatPrice(currentPrice)}
-                    </div>
-                    {selectedAsset.category === 'crypto' && (
-                      <div className={`text-sm font-medium ${isPositive ? 'text-green-500' : 'text-red-500'}`}>
-                        {isPositive ? '+' : ''}{change24h.toFixed(2)}% (24h)
-                      </div>
-                    )}
-                    {selectedAsset.category !== 'crypto' && (
-                      <div className="text-sm text-gray-500 dark:text-gray-400">per USD</div>
-                    )}
-                  </>
-                )}
-              </div>
-            </div>
 
-            <div className="relative h-48 md:h-56">
-              {loading && selectedAsset.category === 'crypto' ? (
-                <div className="absolute inset-0 bg-gray-100 dark:bg-gray-700 rounded-lg animate-pulse" />
-              ) : (
-                <svg viewBox="0 0 800 200" className="w-full h-full" preserveAspectRatio="none">
-                  <defs>
-                    <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor={color} stopOpacity="0.3" />
-                      <stop offset="100%" stopColor={color} stopOpacity="0.02" />
-                    </linearGradient>
-                  </defs>
-                  <path d={chartPath.area} fill="url(#chartGradient)" />
-                  <path d={chartPath.line} fill="none" stroke={color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              )}
-              
-              <div className="absolute bottom-2 left-2 flex gap-4 text-xs text-gray-400">
-                <span>24h</span>
+              <div className="relative flex flex-col" ref={tabsRef}>
+                <TabPanel as={Fragment} static={true}>
+                  <Transition
+                    as="div"
+                    show={selectedTab === 1}
+                    className={`w-full h-full flex items-center justify-center transform transition ease-[cubic-bezier(0.38,0,0.32,1)] data-closed:absolute data-enter:data-closed:scale-90 data-leave:data-closed:scale-125 data-closed:opacity-0 data-enter:duration-700 data-leave:duration-300`}
+                    unmount={false}
+                    appear={true}
+                  >
+                    <>
+                      <div className="absolute -translate-x-[136px]">
+                        <div className="animate-[breath_7s_ease-in-out_3s_infinite_both]">
+                          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-lg shadow-black/[0.03] dark:shadow-black/40 before:absolute before:inset-0 before:m-[8.334%] before:rounded-[inherit] before:border before:border-gray-700/5 dark:before:border-gray-600/20 before:bg-gray-200/60 dark:before:bg-gray-700/40 before:[mask-image:linear-gradient(to_bottom,black,transparent)] p-2">
+                            <Image
+                              className="relative rounded-full"
+                              src="/images/logo-02.webp"
+                              width={26}
+                              height={26}
+                              alt="Ethereum"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="absolute translate-x-[136px]">
+                        <div className="animate-[breath_7s_ease-in-out_3.5s_infinite_both]">
+                          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-lg shadow-black/[0.03] dark:shadow-black/40 before:absolute before:inset-0 before:m-[8.334%] before:rounded-[inherit] before:border before:border-gray-700/5 dark:before:border-gray-600/20 before:bg-gray-200/60 dark:before:bg-gray-700/40 before:[mask-image:linear-gradient(to_bottom,black,transparent)] p-2">
+                            <Image
+                              className="relative rounded-full"
+                              src="/images/logo-03.png"
+                              width={26}
+                              height={26}
+                              alt="Binance"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="absolute -translate-x-[216px] -translate-y-[82px]">
+                        <div className="animate-[breath_6s_ease-in-out_3.5s_infinite_both]">
+                          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-lg shadow-black/[0.03] dark:shadow-black/40 before:absolute before:inset-0 before:m-[8.334%] before:rounded-[inherit] before:border before:border-gray-700/5 dark:before:border-gray-600/20 before:bg-gray-200/60 dark:before:bg-gray-700/40 before:[mask-image:linear-gradient(to_bottom,black,transparent)] p-2">
+                            <Image
+                              className="relative rounded-full"
+                              src="/images/logo-04.png"
+                              width={28}
+                              height={28}
+                              alt="USDT"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="absolute -translate-y-[82px] translate-x-[216px]">
+                        <div className="animate-[breath_6s_ease-in-out_1.5s_infinite_both]">
+                          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-lg shadow-black/[0.03] dark:shadow-black/40 before:absolute before:inset-0 before:m-[8.334%] before:rounded-[inherit] before:border before:border-gray-700/5 dark:before:border-gray-600/20 before:bg-gray-200/60 dark:before:bg-gray-700/40 before:[mask-image:linear-gradient(to_bottom,black,transparent)] p-2">
+                            <Image
+                              className="relative rounded-full"
+                              src="/images/logo-05.png"
+                              width={28}
+                              height={28}
+                              alt="USDC"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="absolute translate-x-[216px] translate-y-[82px]">
+                        <div className="animate-[breath_6s_ease-in-out_2s_infinite_both]">
+                          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-lg shadow-black/[0.03] dark:shadow-black/40 before:absolute before:inset-0 before:m-[8.334%] before:rounded-[inherit] before:border before:border-gray-700/5 dark:before:border-gray-600/20 before:bg-gray-200/60 dark:before:bg-gray-700/40 before:[mask-image:linear-gradient(to_bottom,black,transparent)] p-2">
+                            <Image
+                              className="relative rounded-full"
+                              src="/images/logo-06.webp"
+                              width={28}
+                              height={28}
+                              alt="PayPal"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="absolute -translate-x-[216px] translate-y-[82px]">
+                        <div className="animate-[breath_6s_ease-in-out_2.5s_infinite_both]">
+                          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-lg shadow-black/[0.03] dark:shadow-black/40 before:absolute before:inset-0 before:m-[8.334%] before:rounded-[inherit] before:border before:border-gray-700/5 dark:before:border-gray-600/20 before:bg-gray-200/60 dark:before:bg-gray-700/40 before:[mask-image:linear-gradient(to_bottom,black,transparent)] p-2">
+                            <Image
+                              className="relative rounded-full"
+                              src="/images/logo-07.png"
+                              width={28}
+                              height={28}
+                              alt="Skrill"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="absolute -translate-x-[292px] opacity-40">
+                        <div className="animate-[breath_6s_ease-in-out_2s_infinite_both]">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-full border border-gray-200/60 dark:border-gray-600/40 bg-white dark:bg-gray-800 shadow-lg dark:shadow-black/40 p-1.5">
+                            <Image
+                              className="relative rounded-full"
+                              src="/images/logo-08.webp"
+                              width={22}
+                              height={22}
+                              alt="TON"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="absolute translate-x-[292px] opacity-40">
+                        <div className="animate-[breath_6s_ease-in-out_4s_infinite_both]">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-full border border-gray-200/60 dark:border-gray-600/40 bg-white dark:bg-gray-800 shadow-lg dark:shadow-black/40 p-1.5">
+                            <Image
+                              className="relative rounded-full"
+                              src="/images/logo-09.png"
+                              width={22}
+                              height={22}
+                              alt="Cardano"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  </Transition>
+                </TabPanel>
+
+                <TabPanel as={Fragment} static={true}>
+                  <Transition
+                    as="div"
+                    show={selectedTab === 2}
+                    className={`w-full h-full flex items-center justify-center transform transition ease-[cubic-bezier(0.38,0,0.32,1)] data-closed:absolute data-enter:data-closed:scale-90 data-leave:data-closed:scale-125 data-closed:opacity-0 data-enter:duration-700 data-leave:duration-300`}
+                    unmount={false}
+                    appear={true}
+                  >
+                    <>
+                      <div className="absolute -translate-x-[136px]">
+                        <div className="animate-[breath_7s_ease-in-out_3s_infinite_both]">
+                          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-lg shadow-black/[0.03] dark:shadow-black/40 before:absolute before:inset-0 before:m-[8.334%] before:rounded-[inherit] before:border before:border-gray-700/5 dark:before:border-gray-600/20 before:bg-gray-200/60 dark:before:bg-gray-700/40 before:[mask-image:linear-gradient(to_bottom,black,transparent)] p-2">
+                            <Image
+                              className="relative rounded-full"
+                              src="/images/logo-03.png"
+                              width={26}
+                              height={26}
+                              alt="Binance"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="absolute translate-x-[136px]">
+                        <div className="animate-[breath_7s_ease-in-out_3.5s_infinite_both]">
+                          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-lg shadow-black/[0.03] dark:shadow-black/40 before:absolute before:inset-0 before:m-[8.334%] before:rounded-[inherit] before:border before:border-gray-700/5 dark:before:border-gray-600/20 before:bg-gray-200/60 dark:before:bg-gray-700/40 before:[mask-image:linear-gradient(to_bottom,black,transparent)] p-2">
+                            <Image
+                              className="relative rounded-full"
+                              src="/images/logo-04.png"
+                              width={28}
+                              height={28}
+                              alt="USDT"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="absolute -translate-x-[216px] -translate-y-[82px]">
+                        <div className="animate-[breath_6s_ease-in-out_3.5s_infinite_both]">
+                          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-lg shadow-black/[0.03] dark:shadow-black/40 before:absolute before:inset-0 before:m-[8.334%] before:rounded-[inherit] before:border before:border-gray-700/5 dark:before:border-gray-600/20 before:bg-gray-200/60 dark:before:bg-gray-700/40 before:[mask-image:linear-gradient(to_bottom,black,transparent)] p-2">
+                            <Image
+                              className="relative rounded-full"
+                              src="/images/logo-05.png"
+                              width={28}
+                              height={28}
+                              alt="USDC"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="absolute -translate-y-[82px] translate-x-[216px]">
+                        <div className="animate-[breath_6s_ease-in-out_1.5s_infinite_both]">
+                          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-lg shadow-black/[0.03] dark:shadow-black/40 before:absolute before:inset-0 before:m-[8.334%] before:rounded-[inherit] before:border before:border-gray-700/5 dark:before:border-gray-600/20 before:bg-gray-200/60 dark:before:bg-gray-700/40 before:[mask-image:linear-gradient(to_bottom,black,transparent)] p-2">
+                            <Image
+                              className="relative rounded-full"
+                              src="/images/logo-02.webp"
+                              width={26}
+                              height={26}
+                              alt="Ethereum"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="absolute translate-x-[216px] translate-y-[82px]">
+                        <div className="animate-[breath_6s_ease-in-out_2s_infinite_both]">
+                          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-lg shadow-black/[0.03] dark:shadow-black/40 before:absolute before:inset-0 before:m-[8.334%] before:rounded-[inherit] before:border before:border-gray-700/5 dark:before:border-gray-600/20 before:bg-gray-200/60 dark:before:bg-gray-700/40 before:[mask-image:linear-gradient(to_bottom,black,transparent)] p-2">
+                            <Image
+                              className="relative rounded-full"
+                              src="/images/logo-07.png"
+                              width={28}
+                              height={28}
+                              alt="Skrill"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="absolute -translate-x-[216px] translate-y-[82px]">
+                        <div className="animate-[breath_6s_ease-in-out_2.5s_infinite_both]">
+                          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-lg shadow-black/[0.03] dark:shadow-black/40 before:absolute before:inset-0 before:m-[8.334%] before:rounded-[inherit] before:border before:border-gray-700/5 dark:before:border-gray-600/20 before:bg-gray-200/60 dark:before:bg-gray-700/40 before:[mask-image:linear-gradient(to_bottom,black,transparent)] p-2">
+                            <Image
+                              className="relative rounded-full"
+                              src="/images/logo-06.webp"
+                              width={28}
+                              height={28}
+                              alt="PayPal"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="absolute -translate-x-[292px] opacity-40">
+                        <div className="animate-[breath_6s_ease-in-out_2s_infinite_both]">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-full border border-gray-200/60 dark:border-gray-600/40 bg-white dark:bg-gray-800 shadow-lg dark:shadow-black/40 p-1.5">
+                            <Image
+                              className="relative rounded-full"
+                              src="/images/logo-09.png"
+                              width={22}
+                              height={22}
+                              alt="Cardano"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="absolute translate-x-[292px] opacity-40">
+                        <div className="animate-[breath_6s_ease-in-out_4s_infinite_both]">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-full border border-gray-200/60 dark:border-gray-600/40 bg-white dark:bg-gray-800 shadow-lg dark:shadow-black/40 p-1.5">
+                            <Image
+                              className="relative rounded-full"
+                              src="/images/logo-08.webp"
+                              width={22}
+                              height={22}
+                              alt="TON"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  </Transition>
+                </TabPanel>
+                <TabPanel as={Fragment} static={true}>
+
+                  <Transition
+                    as="div"
+                    show={selectedTab === 3}
+                    className={`w-full h-full flex items-center justify-center transform transition ease-[cubic-bezier(0.38,0,0.32,1)] data-closed:absolute data-enter:data-closed:scale-90 data-leave:data-closed:scale-125 data-closed:opacity-0 data-enter:duration-700 data-leave:duration-300`}
+                    unmount={false}
+                    appear={true}
+                  >
+                    <>
+                      <div className="absolute -translate-x-[136px]">
+                        <div className="animate-[breath_7s_ease-in-out_3s_infinite_both]">
+                          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-lg shadow-black/[0.03] dark:shadow-black/40 before:absolute before:inset-0 before:m-[8.334%] before:rounded-[inherit] before:border before:border-gray-700/5 dark:before:border-gray-600/20 before:bg-gray-200/60 dark:before:bg-gray-700/40 before:[mask-image:linear-gradient(to_bottom,black,transparent)] p-2">
+                            <Image
+                              className="relative rounded-full"
+                              src="/images/logo-02.webp"
+                              width={26}
+                              height={26}
+                              alt="Ethereum"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="absolute translate-x-[136px]">
+                        <div className="animate-[breath_7s_ease-in-out_3.5s_infinite_both]">
+                          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-lg shadow-black/[0.03] dark:shadow-black/40 before:absolute before:inset-0 before:m-[8.334%] before:rounded-[inherit] before:border before:border-gray-700/5 dark:before:border-gray-600/20 before:bg-gray-200/60 dark:before:bg-gray-700/40 before:[mask-image:linear-gradient(to_bottom,black,transparent)] p-2">
+                            <Image
+                              className="relative rounded-full"
+                              src="/images/logo-03.png"
+                              width={26}
+                              height={26}
+                              alt="Binance"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="absolute -translate-x-[216px] -translate-y-[82px]">
+                        <div className="animate-[breath_6s_ease-in-out_3.5s_infinite_both]">
+                          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-lg shadow-black/[0.03] dark:shadow-black/40 before:absolute before:inset-0 before:m-[8.334%] before:rounded-[inherit] before:border before:border-gray-700/5 dark:before:border-gray-600/20 before:bg-gray-200/60 dark:before:bg-gray-700/40 before:[mask-image:linear-gradient(to_bottom,black,transparent)] p-2">
+                            <Image
+                              className="relative rounded-full"
+                              src="/images/logo-04.png"
+                              width={28}
+                              height={28}
+                              alt="USDT"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="absolute -translate-y-[82px] translate-x-[216px]">
+                        <div className="animate-[breath_6s_ease-in-out_1.5s_infinite_both]">
+                          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-lg shadow-black/[0.03] dark:shadow-black/40 before:absolute before:inset-0 before:m-[8.334%] before:rounded-[inherit] before:border before:border-gray-700/5 dark:before:border-gray-600/20 before:bg-gray-200/60 dark:before:bg-gray-700/40 before:[mask-image:linear-gradient(to_bottom,black,transparent)] p-2">
+                            <Image
+                              className="relative rounded-full"
+                              src="/images/logo-05.png"
+                              width={28}
+                              height={28}
+                              alt="USDC"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="absolute translate-x-[216px] translate-y-[82px]">
+                        <div className="animate-[breath_6s_ease-in-out_2s_infinite_both]">
+                          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-lg shadow-black/[0.03] dark:shadow-black/40 before:absolute before:inset-0 before:m-[8.334%] before:rounded-[inherit] before:border before:border-gray-700/5 dark:before:border-gray-600/20 before:bg-gray-200/60 dark:before:bg-gray-700/40 before:[mask-image:linear-gradient(to_bottom,black,transparent)] p-2">
+                            <Image
+                              className="relative rounded-full"
+                              src="/images/logo-06.webp"
+                              width={28}
+                              height={28}
+                              alt="PayPal"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="absolute -translate-x-[216px] translate-y-[82px]">
+                        <div className="animate-[breath_6s_ease-in-out_2.5s_infinite_both]">
+                          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-lg shadow-black/[0.03] dark:shadow-black/40 before:absolute before:inset-0 before:m-[8.334%] before:rounded-[inherit] before:border before:border-gray-700/5 dark:before:border-gray-600/20 before:bg-gray-200/60 dark:before:bg-gray-700/40 before:[mask-image:linear-gradient(to_bottom,black,transparent)] p-2">
+                            <Image
+                              className="relative rounded-full"
+                              src="/images/logo-07.png"
+                              width={28}
+                              height={28}
+                              alt="Skrill"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="absolute -translate-x-[292px] opacity-40">
+                        <div className="animate-[breath_6s_ease-in-out_2s_infinite_both]">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-full border border-gray-200/60 dark:border-gray-600/40 bg-white dark:bg-gray-800 shadow-lg dark:shadow-black/40 p-1.5">
+                            <Image
+                              className="relative rounded-full"
+                              src="/images/logo-08.webp"
+                              width={22}
+                              height={22}
+                              alt="TON"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="absolute translate-x-[292px] opacity-40">
+                        <div className="animate-[breath_6s_ease-in-out_4s_infinite_both]">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-full border border-gray-200/60 dark:border-gray-600/40 bg-white dark:bg-gray-800 shadow-lg dark:shadow-black/40 p-1.5">
+                            <Image
+                              className="relative rounded-full"
+                              src="/images/logo-09.png"
+                              width={22}
+                              height={22}
+                              alt="Cardano"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  </Transition>
+                </TabPanel>
+
+                <TabPanel as={Fragment} static={true}>
+                  <Transition
+                    as="div"
+                    show={selectedTab === 0}
+                    className={`w-full h-full flex items-center justify-center transform transition ease-[cubic-bezier(0.38,0,0.32,1)] data-closed:absolute data-enter:data-closed:scale-90 data-leave:data-closed:scale-125 data-closed:opacity-0 data-enter:duration-700 data-leave:duration-300`}
+                    unmount={false}
+                    appear={true}
+                  >
+                    <>
+                      <div className="absolute -translate-x-[136px]">
+                        <div className="animate-[breath_7s_ease-in-out_3s_infinite_both]">
+                          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-lg shadow-black/[0.03] dark:shadow-black/40 before:absolute before:inset-0 before:m-[8.334%] before:rounded-[inherit] before:border before:border-gray-700/5 dark:before:border-gray-600/20 before:bg-gray-200/60 dark:before:bg-gray-700/40 before:[mask-image:linear-gradient(to_bottom,black,transparent)] p-2">
+                            <Image
+                              className="relative rounded-full"
+                              src="/images/logo-03.png"
+                              width={26}
+                              height={26}
+                              alt="Binance"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="absolute translate-x-[136px]">
+                        <div className="animate-[breath_7s_ease-in-out_3.5s_infinite_both]">
+                          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-lg shadow-black/[0.03] dark:shadow-black/40 before:absolute before:inset-0 before:m-[8.334%] before:rounded-[inherit] before:border before:border-gray-700/5 dark:before:border-gray-600/20 before:bg-gray-200/60 dark:before:bg-gray-700/40 before:[mask-image:linear-gradient(to_bottom,black,transparent)] p-2">
+                            <Image
+                              className="relative rounded-full"
+                              src="/images/logo-04.png"
+                              width={28}
+                              height={28}
+                              alt="USDT"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="absolute -translate-x-[216px] -translate-y-[82px]">
+                        <div className="animate-[breath_6s_ease-in-out_3.5s_infinite_both]">
+                          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-lg shadow-black/[0.03] dark:shadow-black/40 before:absolute before:inset-0 before:m-[8.334%] before:rounded-[inherit] before:border before:border-gray-700/5 dark:before:border-gray-600/20 before:bg-gray-200/60 dark:before:bg-gray-700/40 before:[mask-image:linear-gradient(to_bottom,black,transparent)] p-2">
+                            <Image
+                              className="relative rounded-full"
+                              src="/images/logo-05.png"
+                              width={28}
+                              height={28}
+                              alt="USDC"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="absolute -translate-y-[82px] translate-x-[216px]">
+                        <div className="animate-[breath_6s_ease-in-out_1.5s_infinite_both]">
+                          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-lg shadow-black/[0.03] dark:shadow-black/40 before:absolute before:inset-0 before:m-[8.334%] before:rounded-[inherit] before:border before:border-gray-700/5 dark:before:border-gray-600/20 before:bg-gray-200/60 dark:before:bg-gray-700/40 before:[mask-image:linear-gradient(to_bottom,black,transparent)] p-2">
+                            <Image
+                              className="relative rounded-full"
+                              src="/images/logo-02.webp"
+                              width={26}
+                              height={26}
+                              alt="Ethereum"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="absolute translate-x-[216px] translate-y-[82px]">
+                        <div className="animate-[breath_6s_ease-in-out_2s_infinite_both]">
+                          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-lg shadow-black/[0.03] dark:shadow-black/40 before:absolute before:inset-0 before:m-[8.334%] before:rounded-[inherit] before:border before:border-gray-700/5 dark:before:border-gray-600/20 before:bg-gray-200/60 dark:before:bg-gray-700/40 before:[mask-image:linear-gradient(to_bottom,black,transparent)] p-2">
+                            <Image
+                              className="relative rounded-full"
+                              src="/images/logo-07.png"
+                              width={28}
+                              height={28}
+                              alt="Skrill"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="absolute -translate-x-[216px] translate-y-[82px]">
+                        <div className="animate-[breath_6s_ease-in-out_2.5s_infinite_both]">
+                          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-lg shadow-black/[0.03] dark:shadow-black/40 before:absolute before:inset-0 before:m-[8.334%] before:rounded-[inherit] before:border before:border-gray-700/5 dark:before:border-gray-600/20 before:bg-gray-200/60 dark:before:bg-gray-700/40 before:[mask-image:linear-gradient(to_bottom,black,transparent)] p-2">
+                            <Image
+                              className="relative rounded-full"
+                              src="/images/logo-06.webp"
+                              width={28}
+                              height={28}
+                              alt="PayPal"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="absolute -translate-x-[292px] opacity-40">
+                        <div className="animate-[breath_6s_ease-in-out_2s_infinite_both]">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-full border border-gray-200/60 dark:border-gray-600/40 bg-white dark:bg-gray-800 shadow-lg dark:shadow-black/40 p-1.5">
+                            <Image
+                              className="relative rounded-full"
+                              src="/images/logo-09.png"
+                              width={22}
+                              height={22}
+                              alt="Cardano"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="absolute translate-x-[292px] opacity-40">
+                        <div className="animate-[breath_6s_ease-in-out_4s_infinite_both]">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-full border border-gray-200/60 dark:border-gray-600/40 bg-white dark:bg-gray-800 shadow-lg dark:shadow-black/40 p-1.5">
+                            <Image
+                              className="relative rounded-full"
+                              src="/images/logo-08.webp"
+                              width={22}
+                              height={22}
+                              alt="TON"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  </Transition>
+                </TabPanel>
               </div>
-            </div>
-          </div>
+            </TabPanels>
+          </TabGroup>
         </div>
       </div>
     </section>
   );
 }
+
 
 export default memo(BusinessCategories);
