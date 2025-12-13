@@ -182,6 +182,35 @@
     "documentation": "Dokumentasi",
     "aboutUs": "Tentang Kami"
   },
+  "cookieBanner": {
+    "title": "Kami Menggunakan Cookie",
+    "description": "Kami menggunakan cookie untuk meningkatkan pengalaman Anda, menganalisis lalu lintas situs, dan mempersonalisasi konten. Anda dapat memilih kategori cookie yang ingin Anda terima.",
+    "learnMore": "Pelajari lebih lanjut",
+    "settings": "Pengaturan",
+    "acceptAll": "Terima Semua",
+    "rejectAll": "Tolak Semua",
+    "savePreferences": "Simpan Preferensi",
+    "settingsTitle": "Pengaturan Cookie",
+    "settingsDescription": "Pilih kategori cookie yang ingin Anda terima. Cookie yang diperlukan selalu aktif karena penting untuk fungsi dasar website.",
+    "necessary": {
+      "title": "Cookie yang Diperlukan",
+      "alwaysActive": "Selalu Aktif",
+      "description": "Cookie esensial untuk fungsi dasar website seperti navigasi dan keamanan."
+    },
+    "preferences": {
+      "title": "Cookie Preferensi",
+      "description": "Mengingat pilihan Anda seperti bahasa dan pengaturan tampilan."
+    },
+    "analytics": {
+      "title": "Cookie Analitik",
+      "description": "Membantu kami memahami bagaimana pengunjung berinteraksi dengan website."
+    },
+    "marketing": {
+      "title": "Cookie Marketing",
+      "description": "Digunakan untuk menampilkan iklan yang relevan dengan minat Anda."
+    },
+    "manageSettings": "Kelola Pengaturan Cookie"
+  },
   "statusPage": {
     "title": "Status Sistem",
     "subtitle": "Pantau status layanan Saldopedia secara realtime",

@@ -182,6 +182,35 @@
     "documentation": "Documentation",
     "aboutUs": "About Us"
   },
+  "cookieBanner": {
+    "title": "We Use Cookies",
+    "description": "We use cookies to enhance your experience, analyze site traffic, and personalize content. You can choose which cookie categories you want to accept.",
+    "learnMore": "Learn more",
+    "settings": "Settings",
+    "acceptAll": "Accept All",
+    "rejectAll": "Reject All",
+    "savePreferences": "Save Preferences",
+    "settingsTitle": "Cookie Settings",
+    "settingsDescription": "Choose which cookie categories you want to accept. Necessary cookies are always active as they are essential for basic website functions.",
+    "necessary": {
+      "title": "Necessary Cookies",
+      "alwaysActive": "Always Active",
+      "description": "Essential cookies for basic website functions like navigation and security."
+    },
+    "preferences": {
+      "title": "Preference Cookies",
+      "description": "Remember your choices like language and display settings."
+    },
+    "analytics": {
+      "title": "Analytics Cookies",
+      "description": "Help us understand how visitors interact with the website."
+    },
+    "marketing": {
+      "title": "Marketing Cookies",
+      "description": "Used to display ads relevant to your interests."
+    },
+    "manageSettings": "Manage Cookie Settings"
+  },
   "statusPage": {
     "title": "System Status",
     "subtitle": "Monitor Saldopedia service status in realtime",

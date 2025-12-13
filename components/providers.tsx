@@ -5,6 +5,7 @@ import { LanguageProvider } from '@/contexts/language-context';
 import { AuthProvider } from '@/contexts/auth-context';
 import AutoLogout from '@/components/auto-logout';
 import { PageTransitionLoadingProvider } from '@/components/page-transition-loading';
+import { CookieBannerProvider } from '@/components/cookie-banner';
 import { ReactNode } from 'react';
 
 // AOS library disabled - replaced with custom AnimateOnScroll utility to fix hydration mismatch
@@ -60,8 +61,10 @@ export function Providers({ children }: { children: ReactNode }) {
       <LanguageProvider>
         <AuthProvider>
           <PageTransitionLoadingProvider>
-            <AutoLogout />
-            {children}
+            <CookieBannerProvider>
+              <AutoLogout />
+              {children}
+            </CookieBannerProvider>
           </PageTransitionLoadingProvider>
         </AuthProvider>
       </LanguageProvider>

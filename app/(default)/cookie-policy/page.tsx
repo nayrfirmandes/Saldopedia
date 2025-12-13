@@ -2,10 +2,12 @@
 
 import PageIllustration from "@/components/page-illustration";
 import { useLanguage } from "@/contexts/language-context";
+import { useCookieSettings } from "@/components/cookie-banner";
 import Link from "next/link";
 
 export default function CookiePolicy() {
   const { t } = useLanguage();
+  const { openSettings } = useCookieSettings();
   
   return (
     <section className="relative">
@@ -188,6 +190,18 @@ export default function CookiePolicy() {
               {/* Section 6: How to Control Cookies */}
               <h2>{t("cookiePolicy.section6.title")}</h2>
               <p>{t("cookiePolicy.section6.intro")}</p>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 my-4 dark:bg-blue-900/20 dark:border-blue-800">
+                <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
+                  {t("cookieBanner.manageSettings")}:
+                </p>
+                <button
+                  onClick={openSettings}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors dark:bg-blue-500 dark:hover:bg-blue-600"
+                >
+                  {t("cookieBanner.settingsTitle")}
+                </button>
+              </div>
 
               <h3>{t("cookiePolicy.section6.sub1.title")}</h3>
               <p>{t("cookiePolicy.section6.sub1.content")}</p>
