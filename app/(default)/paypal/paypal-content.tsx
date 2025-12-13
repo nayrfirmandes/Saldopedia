@@ -352,6 +352,26 @@ export default function PayPalContent() {
               </h2>
               <Accordion items={faqData} />
             </div>
+
+            <div className="mx-auto mt-12 max-w-3xl">
+              <h2 className="mb-4 text-center text-2xl font-bold dark:text-gray-100">
+                {t("paypalProductPage.relatedLinks.title")}
+              </h2>
+              <div className="grid gap-3 md:grid-cols-2">
+                <Link href="/calculator" className="flex items-center rounded-lg border border-gray-200 bg-white p-4 transition-all hover:border-blue-300 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:hover:border-blue-500/50">
+                  <span className="text-gray-700 dark:text-gray-300">{t("paypalProductPage.relatedLinks.calculator")}</span>
+                </Link>
+                <Link href="/pricing" className="flex items-center rounded-lg border border-gray-200 bg-white p-4 transition-all hover:border-blue-300 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:hover:border-blue-500/50">
+                  <span className="text-gray-700 dark:text-gray-300">{t("paypalProductPage.relatedLinks.pricing")}</span>
+                </Link>
+                <Link href="/blog/cara-top-up-paypal-aman-dan-cepat" className="flex items-center rounded-lg border border-gray-200 bg-white p-4 transition-all hover:border-blue-300 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:hover:border-blue-500/50">
+                  <span className="text-gray-700 dark:text-gray-300">{t("paypalProductPage.relatedLinks.topupGuide")}</span>
+                </Link>
+                <Link href="/documentation/memulai" className="flex items-center rounded-lg border border-gray-200 bg-white p-4 transition-all hover:border-blue-300 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:hover:border-blue-500/50">
+                  <span className="text-gray-700 dark:text-gray-300">{t("paypalProductPage.relatedLinks.gettingStarted")}</span>
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>

@@ -352,6 +352,26 @@ export default function SkrillContent() {
               </h2>
               <Accordion items={faqData} />
             </div>
+
+            <div className="mx-auto mt-12 max-w-3xl">
+              <h2 className="mb-4 text-center text-2xl font-bold dark:text-gray-100">
+                {t("skrillProductPage.relatedLinks.title")}
+              </h2>
+              <div className="grid gap-3 md:grid-cols-2">
+                <Link href="/calculator" className="flex items-center rounded-lg border border-gray-200 bg-white p-4 transition-all hover:border-purple-300 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:hover:border-purple-500/50">
+                  <span className="text-gray-700 dark:text-gray-300">{t("skrillProductPage.relatedLinks.calculator")}</span>
+                </Link>
+                <Link href="/pricing" className="flex items-center rounded-lg border border-gray-200 bg-white p-4 transition-all hover:border-purple-300 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:hover:border-purple-500/50">
+                  <span className="text-gray-700 dark:text-gray-300">{t("skrillProductPage.relatedLinks.pricing")}</span>
+                </Link>
+                <Link href="/paypal" className="flex items-center rounded-lg border border-gray-200 bg-white p-4 transition-all hover:border-purple-300 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:hover:border-purple-500/50">
+                  <span className="text-gray-700 dark:text-gray-300">{t("skrillProductPage.relatedLinks.paypal")}</span>
+                </Link>
+                <Link href="/documentation/memulai" className="flex items-center rounded-lg border border-gray-200 bg-white p-4 transition-all hover:border-purple-300 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:hover:border-purple-500/50">
+                  <span className="text-gray-700 dark:text-gray-300">{t("skrillProductPage.relatedLinks.gettingStarted")}</span>
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>

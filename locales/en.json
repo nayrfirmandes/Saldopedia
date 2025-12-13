@@ -1069,6 +1069,13 @@
         "question": "How long does processing take?",
         "answer": "After payment confirmation, crypto is sent to your wallet in 5-15 minutes. Active 24/7."
       }
+    },
+    "relatedLinks": {
+      "title": "Related Links",
+      "allCrypto": "View All Cryptocurrencies",
+      "calculator": "Rate Calculator",
+      "guide": "Crypto Transaction Guide",
+      "beginnerGuide": "How to Buy Crypto for Beginners"
     }
   },
   "paypalProductPage": {
@@ -1179,6 +1186,13 @@
         "question": "How does the order payment system work?",
         "answer": "Orders are paid using Saldopedia balance. Top up your balance in the Deposit menu, then use it for orders. Sales proceeds go to your balance and can be withdrawn."
       }
+    },
+    "relatedLinks": {
+      "title": "Related Links",
+      "calculator": "Rate Calculator",
+      "pricing": "View All Rates",
+      "topupGuide": "Safe PayPal Top Up Guide",
+      "gettingStarted": "Getting Started Guide"
     }
   },
   "skrillProductPage": {
@@ -1289,6 +1303,13 @@
         "question": "How does the order payment system work?",
         "answer": "Orders are paid using Saldopedia balance. Top up your balance in the Deposit menu, then use it for orders. Sales proceeds go to your balance and can be withdrawn."
       }
+    },
+    "relatedLinks": {
+      "title": "Related Links",
+      "calculator": "Rate Calculator",
+      "pricing": "View All Rates",
+      "paypal": "PayPal Services",
+      "gettingStarted": "Getting Started Guide"
     }
   },
   "cookiePolicy": {

@@ -319,6 +319,26 @@ export default function CryptoContent() {
               </h2>
               <Accordion items={faqData} />
             </div>
+
+            <div className="mx-auto mt-12 max-w-3xl">
+              <h2 className="mb-4 text-center text-2xl font-bold dark:text-gray-100">
+                {t("cryptoProductPage.relatedLinks.title")}
+              </h2>
+              <div className="grid gap-3 md:grid-cols-2">
+                <Link href="/cryptocurrencies" className="flex items-center rounded-lg border border-gray-200 bg-white p-4 transition-all hover:border-orange-300 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:hover:border-orange-500/50">
+                  <span className="text-gray-700 dark:text-gray-300">{t("cryptoProductPage.relatedLinks.allCrypto")}</span>
+                </Link>
+                <Link href="/calculator" className="flex items-center rounded-lg border border-gray-200 bg-white p-4 transition-all hover:border-orange-300 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:hover:border-orange-500/50">
+                  <span className="text-gray-700 dark:text-gray-300">{t("cryptoProductPage.relatedLinks.calculator")}</span>
+                </Link>
+                <Link href="/documentation/cryptocurrency" className="flex items-center rounded-lg border border-gray-200 bg-white p-4 transition-all hover:border-orange-300 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:hover:border-orange-500/50">
+                  <span className="text-gray-700 dark:text-gray-300">{t("cryptoProductPage.relatedLinks.guide")}</span>
+                </Link>
+                <Link href="/blog/cara-membeli-cryptocurrency-untuk-pemula" className="flex items-center rounded-lg border border-gray-200 bg-white p-4 transition-all hover:border-orange-300 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:hover:border-orange-500/50">
+                  <span className="text-gray-700 dark:text-gray-300">{t("cryptoProductPage.relatedLinks.beginnerGuide")}</span>
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>
