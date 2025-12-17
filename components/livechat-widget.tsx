@@ -74,6 +74,8 @@ export default function LivechatWidget() {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isWaitingAdmin, setIsWaitingAdmin] = useState(false);
+  const [hasAdminReplied, setHasAdminReplied] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -118,6 +120,7 @@ export default function LivechatWidget() {
         const hasAdminMessage = newMessages.some(m => m.sender === 'admin');
         if (hasAdminMessage) {
           setIsWaitingAdmin(false);
+          setHasAdminReplied(true);
         }
       }
     } catch (error) {
@@ -228,23 +231,33 @@ export default function LivechatWidget() {
     setSessionId(null);
     setMessages([]);
     setIsWaitingAdmin(false);
+    setHasAdminReplied(false);
     startSession();
+  };
+
+  const handleClose = () => {
+    setIsAnimating(true);
+    setTimeout(() => {
+      setIsOpen(false);
+      setIsAnimating(false);
+    }, 200);
   };
 
   return (
     <>
-      {!isOpen && (
-        <button
-          onClick={handleOpen}
-          className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-110"
-          aria-label="Open live chat"
-        >
-          <MessageCircle className="w-6 h-6" />
-        </button>
-      )}
+      <button
+        onClick={handleOpen}
+        className={`fixed bottom-6 right-6 z-50 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ease-out ${
+          isOpen ? 'scale-0 opacity-0' : 'scale-100 opacity-100 hover:scale-110'
+        }`}
+        aria-label="Open live chat"
+      >
+        <MessageCircle className="w-6 h-6" />
+      </button>
 
-      {isOpen && (
-        <div className="fixed bottom-6 right-6 z-50 w-[360px] max-w-[calc(100vw-48px)] h-[500px] max-h-[calc(100vh-100px)] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-200 dark:border-gray-700">
+      <div className={`fixed bottom-6 right-6 z-50 w-[360px] max-w-[calc(100vw-48px)] h-[500px] max-h-[calc(100vh-100px)] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-200 dark:border-gray-700 transition-all duration-300 ease-out origin-bottom-right ${
+        isOpen && !isAnimating ? 'scale-100 opacity-100' : 'scale-0 opacity-0 pointer-events-none'
+      }`}>
           <div className="bg-blue-600 text-white px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
@@ -265,7 +278,7 @@ export default function LivechatWidget() {
                 Chat Baru
               </button>
               <button
-                onClick={() => setIsOpen(false)}
+                onClick={handleClose}
                 className="hover:bg-white/20 p-1 rounded transition-colors"
                 aria-label="Close chat"
               >
@@ -346,7 +359,7 @@ export default function LivechatWidget() {
             <div ref={messagesEndRef} />
           </div>
 
-          {!isWaitingAdmin && (
+          {!isWaitingAdmin && !hasAdminReplied && (
             <div className="px-4 py-2 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
               <button
                 onClick={requestAdmin}
@@ -382,7 +395,6 @@ export default function LivechatWidget() {
             </div>
           </div>
         </div>
-      )}
     </>
   );
 }
