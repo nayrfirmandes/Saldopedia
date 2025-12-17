@@ -466,3 +466,22 @@ export const chatMessages = pgTable("chat_messages", {
 
 export type ChatMessage = typeof chatMessages.$inferSelect;
 export type InsertChatMessage = typeof chatMessages.$inferInsert;
+
+// Livechat - Learned Knowledge (untuk bot belajar)
+export const chatKnowledge = pgTable("chat_knowledge", {
+  id: serial("id").primaryKey(),
+  question: text("question").notNull(),
+  answer: text("answer").notNull(),
+  keywords: text("keywords"),
+  addedBy: varchar("added_by", { length: 100 }),
+  usageCount: integer("usage_count").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+}, (table) => {
+  return {
+    keywordsIdx: index("chat_knowledge_keywords_idx").on(table.keywords),
+  };
+});
+
+export type ChatKnowledge = typeof chatKnowledge.$inferSelect;
+export type InsertChatKnowledge = typeof chatKnowledge.$inferInsert;

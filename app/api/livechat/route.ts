@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
-import { chatSessions, chatMessages } from '@/shared/schema';
-import { eq, desc } from 'drizzle-orm';
+import { chatSessions, chatMessages, chatKnowledge } from '@/shared/schema';
+import { eq, desc, sql } from 'drizzle-orm';
 import { getDatabaseUrl } from '@/lib/db-url';
 import OpenAI from 'openai';
-import { SYSTEM_PROMPT } from '@/lib/chat-knowledge';
+import { SYSTEM_PROMPT, extractKeywords, calculateRelevanceScore } from '@/lib/chat-knowledge';
 import { sendTelegramMessage, formatNewChatMessage, formatFollowUpMessage, formatAdminRequestMessage } from '@/lib/telegram';
 
-const sql = neon(getDatabaseUrl());
-const db = drizzle(sql);
+const sqlClient = neon(getDatabaseUrl());
+const db = drizzle(sqlClient);
 
 const openai = new OpenAI({
   baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
@@ -18,6 +18,43 @@ const openai = new OpenAI({
 
 function generateSessionId(): string {
   return 'chat_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
+}
+
+async function getLearnedKnowledge(userMessage: string): Promise<string> {
+  try {
+    const allKnowledge = await db.select().from(chatKnowledge);
+    
+    if (allKnowledge.length === 0) return '';
+    
+    const questionKeywords = extractKeywords(userMessage);
+    
+    const relevantKnowledge = allKnowledge
+      .map(k => {
+        const keywords = k.keywords ? k.keywords.split(',').map(kw => kw.trim()) : extractKeywords(k.question);
+        const score = calculateRelevanceScore(userMessage, keywords);
+        return { ...k, score };
+      })
+      .filter(k => k.score > 0.3)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 5);
+    
+    if (relevantKnowledge.length === 0) return '';
+    
+    for (const k of relevantKnowledge) {
+      await db.update(chatKnowledge)
+        .set({ usageCount: sql`${chatKnowledge.usageCount} + 1` })
+        .where(eq(chatKnowledge.id, k.id));
+    }
+    
+    const knowledgeText = relevantKnowledge
+      .map(k => `Q: ${k.question}\nA: ${k.answer}`)
+      .join('\n\n');
+    
+    return `\n\nPENGETAHUAN TAMBAHAN YANG DIPELAJARI:\n${knowledgeText}`;
+  } catch (error) {
+    console.error('Error fetching learned knowledge:', error);
+    return '';
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -37,7 +74,7 @@ export async function POST(request: NextRequest) {
       await db.insert(chatMessages).values({
         sessionId: newSessionId,
         sender: 'ai',
-        message: 'Halo! Saya asisten virtual Saldopedia. Ada yang bisa saya bantu hari ini? 😊',
+        message: 'Halo! Saya asisten virtual Saldopedia. Ada yang bisa saya bantu hari ini?',
       });
 
       return NextResponse.json({
@@ -45,7 +82,7 @@ export async function POST(request: NextRequest) {
         sessionId: newSessionId,
         messages: [{
           sender: 'ai',
-          message: 'Halo! Saya asisten virtual Saldopedia. Ada yang bisa saya bantu hari ini? 😊',
+          message: 'Halo! Saya asisten virtual Saldopedia. Ada yang bisa saya bantu hari ini?',
           createdAt: new Date().toISOString(),
         }],
       });
@@ -100,11 +137,14 @@ export async function POST(request: NextRequest) {
         content: msg.message,
       }));
 
+      const learnedKnowledge = await getLearnedKnowledge(message);
+      const enhancedSystemPrompt = SYSTEM_PROMPT + learnedKnowledge;
+
       try {
         const completion = await openai.chat.completions.create({
           model: 'gpt-4o-mini',
           messages: [
-            { role: 'system', content: SYSTEM_PROMPT },
+            { role: 'system', content: enhancedSystemPrompt },
             ...chatHistory,
           ],
           max_tokens: 500,

@@ -70,7 +70,7 @@ Built with Next.js (App Router, SSR, Static Generation), React, and TypeScript. 
 -   **Brevo (Sendinblue)**: Transactional email.
 -   **NOWPayments**: Cryptocurrency payment gateway and custody.
 -   **Google OAuth**: Social login integration.
--   **AI Livechat + Telegram**: Custom livechat with AI assistant (OpenAI via Replit AI Integrations) and Telegram admin integration.
+-   **AI Livechat + Telegram**: Custom livechat with AI assistant (OpenAI via Replit AI Integrations) and Telegram admin integration. Bot can learn new knowledge via Telegram commands (/learn, /list, /delete).
 -   **Fonnte**: WhatsApp OTP for phone verification (Indonesian provider).
 
 ## Documentation (content/docs/)
