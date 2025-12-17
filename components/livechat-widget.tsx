@@ -67,6 +67,9 @@ function renderMessageWithLinks(text: string, isUser: boolean = false) {
   return elements.length > 0 ? elements : text;
 }
 
+const SESSION_TIMEOUT_MINUTES = 10;
+const GREETING_MESSAGE = "Halo! Ada yang bisa kami bantu? Ketik pertanyaan Anda di sini.";
+
 export default function LivechatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -76,6 +79,8 @@ export default function LivechatWidget() {
   const [isWaitingAdmin, setIsWaitingAdmin] = useState(false);
   const [hasAdminReplied, setHasAdminReplied] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [showGreeting, setShowGreeting] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -88,10 +93,29 @@ export default function LivechatWidget() {
   }, [messages]);
 
   useEffect(() => {
+    setIsHydrated(true);
+    
     const savedSessionId = localStorage.getItem('livechat_session');
-    if (savedSessionId) {
-      setSessionId(savedSessionId);
-      fetchMessages(savedSessionId);
+    const lastActivity = localStorage.getItem('livechat_last_activity');
+    
+    if (savedSessionId && lastActivity) {
+      const lastTime = parseInt(lastActivity, 10);
+      const now = Date.now();
+      const minutesElapsed = (now - lastTime) / (1000 * 60);
+      
+      if (minutesElapsed >= SESSION_TIMEOUT_MINUTES) {
+        localStorage.removeItem('livechat_session');
+        localStorage.removeItem('livechat_last_activity');
+        setShowGreeting(true);
+      } else {
+        setSessionId(savedSessionId);
+        fetchMessages(savedSessionId);
+      }
+    } else if (!savedSessionId) {
+      const greetingDismissed = localStorage.getItem('livechat_greeting_dismissed');
+      if (!greetingDismissed) {
+        setTimeout(() => setShowGreeting(true), 3000);
+      }
     }
   }, []);
 
@@ -100,10 +124,38 @@ export default function LivechatWidget() {
 
     const interval = setInterval(() => {
       fetchMessages(sessionId);
+      checkSessionExpiry();
     }, 5000);
 
     return () => clearInterval(interval);
   }, [sessionId, isOpen]);
+
+  const updateLastActivity = () => {
+    localStorage.setItem('livechat_last_activity', Date.now().toString());
+  };
+
+  const checkSessionExpiry = () => {
+    const lastActivity = localStorage.getItem('livechat_last_activity');
+    if (!lastActivity) return;
+    
+    const lastTime = parseInt(lastActivity, 10);
+    const now = Date.now();
+    const minutesElapsed = (now - lastTime) / (1000 * 60);
+    
+    if (minutesElapsed >= SESSION_TIMEOUT_MINUTES) {
+      expireSession();
+    }
+  };
+
+  const expireSession = () => {
+    localStorage.removeItem('livechat_session');
+    localStorage.removeItem('livechat_last_activity');
+    setSessionId(null);
+    setMessages([]);
+    setIsWaitingAdmin(false);
+    setHasAdminReplied(false);
+    setIsOpen(false);
+  };
 
   const fetchMessages = async (sid: string) => {
     try {
@@ -141,6 +193,7 @@ export default function LivechatWidget() {
         setSessionId(data.sessionId);
         setMessages(data.messages);
         localStorage.setItem('livechat_session', data.sessionId);
+        updateLastActivity();
       }
     } catch (error) {
       console.error('Failed to start session:', error);
@@ -155,6 +208,7 @@ export default function LivechatWidget() {
     const userMessage = inputValue.trim();
     setInputValue('');
     setIsLoading(true);
+    updateLastActivity();
 
     setMessages(prev => [...prev, {
       sender: 'user',
@@ -175,6 +229,7 @@ export default function LivechatWidget() {
         } else if (data.reply) {
           setMessages(prev => [...prev, data.reply]);
         }
+        updateLastActivity();
       }
     } catch (error) {
       console.error('Failed to send message:', error);
@@ -213,10 +268,17 @@ export default function LivechatWidget() {
 
   const handleOpen = () => {
     setIsOpen(true);
+    setShowGreeting(false);
+    localStorage.setItem('livechat_greeting_dismissed', 'true');
     if (!sessionId) {
       startSession();
     }
     setTimeout(() => inputRef.current?.focus(), 100);
+  };
+
+  const dismissGreeting = () => {
+    setShowGreeting(false);
+    localStorage.setItem('livechat_greeting_dismissed', 'true');
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -243,8 +305,34 @@ export default function LivechatWidget() {
     }, 200);
   };
 
+  if (!isHydrated) return null;
+
   return (
     <>
+      {showGreeting && !isOpen && (
+        <div className="fixed bottom-24 right-6 z-50 animate-fade-in-up">
+          <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-4 max-w-[280px] border border-gray-200 dark:border-gray-700">
+            <button
+              onClick={dismissGreeting}
+              className="absolute -top-2 -right-2 w-6 h-6 bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-300 transition-colors"
+              aria-label="Dismiss greeting"
+            >
+              <X className="w-3 h-3" />
+            </button>
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                <Bot className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">Saldopedia Support</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{GREETING_MESSAGE}</p>
+              </div>
+            </div>
+            <div className="absolute bottom-0 right-8 transform translate-y-1/2 rotate-45 w-3 h-3 bg-white dark:bg-gray-800 border-r border-b border-gray-200 dark:border-gray-700" />
+          </div>
+        </div>
+      )}
+
       <button
         onClick={handleOpen}
         className={`fixed bottom-6 right-6 z-50 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ease-out ${
