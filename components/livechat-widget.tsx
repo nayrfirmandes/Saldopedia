@@ -9,6 +9,29 @@ interface ChatMessage {
   createdAt: string;
 }
 
+function renderMessageWithLinks(text: string) {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const parts = text.split(urlRegex);
+  
+  return parts.map((part, index) => {
+    if (urlRegex.test(part)) {
+      urlRegex.lastIndex = 0;
+      return (
+        <a
+          key={index}
+          href={part}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline hover:opacity-80 break-all"
+        >
+          {part}
+        </a>
+      );
+    }
+    return <span key={index}>{part}</span>;
+  });
+}
+
 export default function LivechatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -245,7 +268,7 @@ export default function LivechatWidget() {
                         ? 'bg-green-100 dark:bg-green-900 text-green-900 dark:text-green-100 rounded-bl-sm'
                         : 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-bl-sm shadow-sm'
                   }`}>
-                    {msg.message}
+                    {renderMessageWithLinks(msg.message)}
                   </div>
                 </div>
               </div>
