@@ -137,11 +137,11 @@ export async function POST(request: NextRequest) {
     }
 
     const replyText = message.reply_to_message.text || '';
-    const sessionMatch = replyText.match(/Session:\s*<code>([^<]+)<\/code>|Session:\s*`([^`]+)`|Session:\s*(\S+)/i);
+    const sessionMatch = replyText.match(/Session:\s*([a-z0-9_]+)/i);
     
     let sessionId: string | null = null;
     if (sessionMatch) {
-      sessionId = sessionMatch[1] || sessionMatch[2] || sessionMatch[3];
+      sessionId = sessionMatch[1];
     }
 
     if (!sessionId) {
