@@ -9,27 +9,62 @@ interface ChatMessage {
   createdAt: string;
 }
 
-function renderMessageWithLinks(text: string) {
-  const urlRegex = /(https?:\/\/[^\s]+)/g;
-  const parts = text.split(urlRegex);
+function renderMessageWithLinks(text: string, isUser: boolean = false) {
+  if (isUser) return text;
   
-  return parts.map((part, index) => {
-    if (urlRegex.test(part)) {
-      urlRegex.lastIndex = 0;
-      return (
-        <a
-          key={index}
-          href={part}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline hover:opacity-80 break-all"
-        >
-          {part}
-        </a>
-      );
+  const elements: React.ReactNode[] = [];
+  let lastIndex = 0;
+  
+  const markdownLinkRegex = /\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g;
+  let match;
+  
+  while ((match = markdownLinkRegex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      elements.push(<span key={`text-${lastIndex}`}>{text.slice(lastIndex, match.index)}</span>);
     }
-    return <span key={index}>{part}</span>;
-  });
+    
+    elements.push(
+      <a
+        key={`link-${match.index}`}
+        href={match[2]}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-600 dark:text-blue-400 underline hover:opacity-80"
+      >
+        {match[1]}
+      </a>
+    );
+    
+    lastIndex = match.index + match[0].length;
+  }
+  
+  if (lastIndex < text.length) {
+    const remaining = text.slice(lastIndex);
+    const urlRegex = /(https?:\/\/[^\s.,!?)]+)/g;
+    const parts = remaining.split(urlRegex);
+    
+    parts.forEach((part, i) => {
+      if (urlRegex.test(part)) {
+        urlRegex.lastIndex = 0;
+        const displayUrl = part.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
+        elements.push(
+          <a
+            key={`rawlink-${lastIndex}-${i}`}
+            href={part}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 dark:text-blue-400 underline hover:opacity-80"
+          >
+            {displayUrl}
+          </a>
+        );
+      } else if (part) {
+        elements.push(<span key={`remaining-${lastIndex}-${i}`}>{part}</span>);
+      }
+    });
+  }
+  
+  return elements.length > 0 ? elements : text;
 }
 
 export default function LivechatWidget() {
@@ -268,7 +303,7 @@ export default function LivechatWidget() {
                         ? 'bg-green-100 dark:bg-green-900 text-green-900 dark:text-green-100 rounded-bl-sm'
                         : 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-bl-sm shadow-sm'
                   }`}>
-                    {renderMessageWithLinks(msg.message)}
+                    {renderMessageWithLinks(msg.message, msg.sender === 'user')}
                   </div>
                 </div>
               </div>
