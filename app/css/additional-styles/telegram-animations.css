@@ -1,0 +1,672 @@
+/* Telegram-Style Animation System */
+/* Smooth, spring-based animations inspired by Telegram's buttery UI */
+
+/* ============================================
+   EASING CURVES - Telegram-inspired physics
+   ============================================ */
+:root {
+  /* Spring easing - natural bounce feel */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-spring-soft: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-spring-out: cubic-bezier(0.16, 1, 0.3, 1);
+  
+  /* Smooth easing - silk-like transitions */
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-smooth-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-smooth-in: cubic-bezier(0.4, 0, 1, 1);
+  
+  /* Quick snap - instant feedback */
+  --ease-snap: cubic-bezier(0.2, 0, 0, 1);
+  
+  /* Durations */
+  --duration-instant: 100ms;
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --duration-smooth: 300ms;
+  --duration-slow: 400ms;
+  --duration-page: 450ms;
+}
+
+/* ============================================
+   GLOBAL TRANSITION DEFAULTS
+   ============================================ */
+@layer base {
+  /* Enable hardware acceleration for smooth animations */
+  * {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+  
+  /* Smooth transitions for all interactive elements */
+  a, button, input, select, textarea,
+  [role="button"], [tabindex]:not([tabindex="-1"]) {
+    transition-property: transform, opacity, background-color, border-color, color, box-shadow;
+    transition-duration: var(--duration-normal);
+    transition-timing-function: var(--ease-smooth);
+  }
+}
+
+/* ============================================
+   BUTTON ANIMATIONS - Press & Hover
+   ============================================ */
+@layer components {
+  /* Base button with Telegram-style press effect */
+  .btn-telegram,
+  .btn,
+  .btn-sm,
+  .btn-lg,
+  button:not(.no-animation) {
+    transform: scale(1) translateZ(0);
+    transition: 
+      transform var(--duration-fast) var(--ease-spring),
+      background-color var(--duration-normal) var(--ease-smooth),
+      box-shadow var(--duration-normal) var(--ease-smooth),
+      opacity var(--duration-fast) var(--ease-smooth);
+    will-change: transform;
+  }
+  
+  /* Hover - subtle lift */
+  .btn-telegram:hover,
+  .btn:hover,
+  .btn-sm:hover,
+  .btn-lg:hover,
+  button:not(.no-animation):hover {
+    transform: scale(1.02) translateZ(0);
+  }
+  
+  /* Active/Press - scale down with spring */
+  .btn-telegram:active,
+  .btn:active,
+  .btn-sm:active,
+  .btn-lg:active,
+  button:not(.no-animation):active {
+    transform: scale(0.97) translateZ(0);
+    transition-duration: var(--duration-instant);
+  }
+  
+  /* Focus state - subtle glow */
+  .btn-telegram:focus-visible,
+  .btn:focus-visible,
+  .btn-sm:focus-visible,
+  .btn-lg:focus-visible,
+  button:not(.no-animation):focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4);
+  }
+}
+
+/* ============================================
+   CARD & CONTAINER ANIMATIONS
+   ============================================ */
+@layer components {
+  /* Card hover - subtle lift and shadow */
+  .card-telegram,
+  .hover-lift {
+    transform: translateY(0) translateZ(0);
+    transition: 
+      transform var(--duration-smooth) var(--ease-spring-soft),
+      box-shadow var(--duration-smooth) var(--ease-smooth);
+    will-change: transform, box-shadow;
+  }
+  
+  .card-telegram:hover,
+  .hover-lift:hover {
+    transform: translateY(-4px) translateZ(0);
+    box-shadow: 
+      0 10px 40px -10px rgba(0, 0, 0, 0.15),
+      0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Dark mode shadow adjustment */
+  .dark .card-telegram:hover,
+  .dark .hover-lift:hover {
+    box-shadow: 
+      0 10px 40px -10px rgba(0, 0, 0, 0.4),
+      0 4px 6px -4px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Subtle scale on hover */
+  .hover-scale {
+    transform: scale(1) translateZ(0);
+    transition: transform var(--duration-normal) var(--ease-spring-soft);
+    will-change: transform;
+  }
+  
+  .hover-scale:hover {
+    transform: scale(1.03) translateZ(0);
+  }
+  
+  /* Glow effect on hover */
+  .hover-glow {
+    transition: box-shadow var(--duration-smooth) var(--ease-smooth);
+  }
+  
+  .hover-glow:hover {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+  }
+  
+  .dark .hover-glow:hover {
+    box-shadow: 0 0 30px rgba(59, 130, 246, 0.2);
+  }
+}
+
+/* ============================================
+   LINK ANIMATIONS
+   ============================================ */
+@layer components {
+  /* Animated underline */
+  .link-telegram {
+    position: relative;
+    transition: color var(--duration-fast) var(--ease-smooth);
+  }
+  
+  .link-telegram::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: currentColor;
+    transition: width var(--duration-smooth) var(--ease-spring-out);
+  }
+  
+  .link-telegram:hover::after {
+    width: 100%;
+  }
+}
+
+/* ============================================
+   INPUT ANIMATIONS
+   ============================================ */
+@layer components {
+  /* Form inputs with smooth focus */
+  .form-input,
+  .form-textarea,
+  .form-select,
+  input:not([type="checkbox"]):not([type="radio"]),
+  textarea,
+  select {
+    transition: 
+      border-color var(--duration-normal) var(--ease-smooth),
+      box-shadow var(--duration-normal) var(--ease-smooth),
+      background-color var(--duration-normal) var(--ease-smooth);
+  }
+  
+  .form-input:focus,
+  .form-textarea:focus,
+  .form-select:focus,
+  input:not([type="checkbox"]):not([type="radio"]):focus,
+  textarea:focus,
+  select:focus {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  }
+  
+  /* Checkbox/Radio smooth transitions */
+  input[type="checkbox"],
+  input[type="radio"] {
+    transition: 
+      background-color var(--duration-fast) var(--ease-smooth),
+      border-color var(--duration-fast) var(--ease-smooth),
+      transform var(--duration-fast) var(--ease-spring);
+  }
+  
+  input[type="checkbox"]:checked,
+  input[type="radio"]:checked {
+    animation: checkPop 0.2s var(--ease-spring);
+  }
+}
+
+@keyframes checkPop {
+  0% { transform: scale(0.8); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* ============================================
+   MODAL & DROPDOWN ANIMATIONS
+   ============================================ */
+@layer components {
+  /* Modal backdrop */
+  .modal-backdrop {
+    opacity: 0;
+    transition: opacity var(--duration-smooth) var(--ease-smooth);
+  }
+  
+  .modal-backdrop.show {
+    opacity: 1;
+  }
+  
+  /* Modal content - spring scale */
+  .modal-content {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px) translateZ(0);
+    transition: 
+      opacity var(--duration-smooth) var(--ease-smooth),
+      transform var(--duration-smooth) var(--ease-spring-out);
+    will-change: transform, opacity;
+  }
+  
+  .modal-content.show {
+    opacity: 1;
+    transform: scale(1) translateY(0) translateZ(0);
+  }
+  
+  /* Dropdown menu - slide + fade */
+  .dropdown-telegram,
+  [data-dropdown] {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98) translateZ(0);
+    transform-origin: top center;
+    transition: 
+      opacity var(--duration-normal) var(--ease-smooth),
+      transform var(--duration-normal) var(--ease-spring-out),
+      visibility var(--duration-normal);
+    visibility: hidden;
+    will-change: transform, opacity;
+  }
+  
+  .dropdown-telegram.show,
+  [data-dropdown].show,
+  .dropdown-telegram:not(.hidden),
+  [data-dropdown]:not(.hidden) {
+    opacity: 1;
+    transform: translateY(0) scale(1) translateZ(0);
+    visibility: visible;
+  }
+}
+
+/* ============================================
+   PAGE TRANSITION ANIMATIONS
+   ============================================ */
+@layer utilities {
+  /* Fade in from bottom */
+  .page-enter {
+    animation: pageEnter var(--duration-page) var(--ease-spring-out) both;
+  }
+  
+  /* Fade out to top */
+  .page-exit {
+    animation: pageExit var(--duration-smooth) var(--ease-smooth-in) both;
+  }
+  
+  /* Slide in from right (for navigation) */
+  .slide-in-right {
+    animation: slideInRight var(--duration-smooth) var(--ease-spring-out) both;
+  }
+  
+  /* Slide in from left */
+  .slide-in-left {
+    animation: slideInLeft var(--duration-smooth) var(--ease-spring-out) both;
+  }
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(20px) translateZ(0);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) translateZ(0);
+  }
+}
+
+@keyframes pageExit {
+  from {
+    opacity: 1;
+    transform: translateY(0) translateZ(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px) translateZ(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px) translateZ(0);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) translateZ(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px) translateZ(0);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) translateZ(0);
+  }
+}
+
+/* ============================================
+   LIST & STAGGER ANIMATIONS
+   ============================================ */
+@layer utilities {
+  /* Base list item animation */
+  .list-item-telegram {
+    opacity: 0;
+    transform: translateY(10px) translateZ(0);
+    animation: listItemEnter var(--duration-smooth) var(--ease-spring-out) both;
+  }
+  
+  /* Stagger delays */
+  .stagger-1 { animation-delay: 0ms; }
+  .stagger-2 { animation-delay: 50ms; }
+  .stagger-3 { animation-delay: 100ms; }
+  .stagger-4 { animation-delay: 150ms; }
+  .stagger-5 { animation-delay: 200ms; }
+  .stagger-6 { animation-delay: 250ms; }
+  .stagger-7 { animation-delay: 300ms; }
+  .stagger-8 { animation-delay: 350ms; }
+}
+
+@keyframes listItemEnter {
+  from {
+    opacity: 0;
+    transform: translateY(10px) translateZ(0);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) translateZ(0);
+  }
+}
+
+/* ============================================
+   SKELETON LOADING ANIMATIONS
+   ============================================ */
+@layer components {
+  .skeleton-telegram {
+    background: linear-gradient(
+      90deg,
+      rgba(200, 200, 200, 0.2) 0%,
+      rgba(200, 200, 200, 0.4) 50%,
+      rgba(200, 200, 200, 0.2) 100%
+    );
+    background-size: 200% 100%;
+    animation: skeletonShimmer 1.5s ease-in-out infinite;
+  }
+  
+  .dark .skeleton-telegram {
+    background: linear-gradient(
+      90deg,
+      rgba(100, 100, 100, 0.2) 0%,
+      rgba(100, 100, 100, 0.4) 50%,
+      rgba(100, 100, 100, 0.2) 100%
+    );
+    background-size: 200% 100%;
+  }
+}
+
+@keyframes skeletonShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ============================================
+   RIPPLE EFFECT (Touch Feedback)
+   ============================================ */
+@layer components {
+  .ripple-container {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    transform: scale(0);
+    animation: rippleEffect 0.6s var(--ease-smooth-out);
+    pointer-events: none;
+  }
+  
+  .dark .ripple {
+    background: rgba(255, 255, 255, 0.2);
+  }
+}
+
+@keyframes rippleEffect {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* ============================================
+   NOTIFICATION & TOAST ANIMATIONS
+   ============================================ */
+@layer utilities {
+  .toast-enter {
+    animation: toastEnter var(--duration-smooth) var(--ease-spring-out) both;
+  }
+  
+  .toast-exit {
+    animation: toastExit var(--duration-normal) var(--ease-smooth-in) both;
+  }
+}
+
+@keyframes toastEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95) translateZ(0);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1) translateZ(0);
+  }
+}
+
+@keyframes toastExit {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1) translateZ(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95) translateZ(0);
+  }
+}
+
+/* ============================================
+   ICON ANIMATIONS
+   ============================================ */
+@layer utilities {
+  /* Spin with smooth easing */
+  .spin-smooth {
+    animation: spinSmooth 1s var(--ease-smooth) infinite;
+  }
+  
+  /* Bounce */
+  .bounce-telegram {
+    animation: bounceTelegram 0.5s var(--ease-spring) infinite;
+  }
+  
+  /* Pulse */
+  .pulse-telegram {
+    animation: pulseTelegram 2s var(--ease-smooth) infinite;
+  }
+}
+
+@keyframes spinSmooth {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes bounceTelegram {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes pulseTelegram {
+  0%, 100% { 
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+}
+
+/* ============================================
+   ACCORDION/COLLAPSE ANIMATIONS
+   ============================================ */
+@layer components {
+  .accordion-content {
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: 
+      max-height var(--duration-smooth) var(--ease-smooth),
+      opacity var(--duration-normal) var(--ease-smooth),
+      padding var(--duration-smooth) var(--ease-smooth);
+  }
+  
+  .accordion-content.open {
+    max-height: 1000px;
+    opacity: 1;
+  }
+  
+  .accordion-icon {
+    transition: transform var(--duration-normal) var(--ease-spring);
+  }
+  
+  .accordion-icon.open {
+    transform: rotate(180deg);
+  }
+}
+
+/* ============================================
+   TAB ANIMATIONS
+   ============================================ */
+@layer components {
+  .tab-indicator {
+    transition: 
+      left var(--duration-smooth) var(--ease-spring),
+      width var(--duration-smooth) var(--ease-spring);
+    will-change: left, width;
+  }
+  
+  .tab-content {
+    opacity: 0;
+    transform: translateX(10px) translateZ(0);
+    transition: 
+      opacity var(--duration-normal) var(--ease-smooth),
+      transform var(--duration-normal) var(--ease-smooth);
+  }
+  
+  .tab-content.active {
+    opacity: 1;
+    transform: translateX(0) translateZ(0);
+  }
+}
+
+/* ============================================
+   SCROLL ANIMATIONS
+   ============================================ */
+@layer utilities {
+  /* Fade in on scroll */
+  .scroll-fade-in {
+    opacity: 0;
+    transform: translateY(30px) translateZ(0);
+    transition: 
+      opacity var(--duration-slow) var(--ease-smooth),
+      transform var(--duration-slow) var(--ease-spring-out);
+  }
+  
+  .scroll-fade-in.visible {
+    opacity: 1;
+    transform: translateY(0) translateZ(0);
+  }
+  
+  /* Scale in on scroll */
+  .scroll-scale-in {
+    opacity: 0;
+    transform: scale(0.95) translateZ(0);
+    transition: 
+      opacity var(--duration-slow) var(--ease-smooth),
+      transform var(--duration-slow) var(--ease-spring-out);
+  }
+  
+  .scroll-scale-in.visible {
+    opacity: 1;
+    transform: scale(1) translateZ(0);
+  }
+}
+
+/* ============================================
+   LOADING STATES
+   ============================================ */
+@layer utilities {
+  /* Button loading state */
+  .btn-loading {
+    pointer-events: none;
+    opacity: 0.7;
+  }
+  
+  .btn-loading::after {
+    content: '';
+    width: 16px;
+    height: 16px;
+    margin-left: 8px;
+    border: 2px solid transparent;
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spinSmooth 0.8s linear infinite;
+  }
+}
+
+/* ============================================
+   REDUCED MOTION PREFERENCES
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .skeleton-telegram {
+    animation: none;
+    background: rgba(200, 200, 200, 0.3);
+  }
+}
+
+/* ============================================
+   PERFORMANCE OPTIMIZATIONS
+   ============================================ */
+@layer base {
+  /* GPU acceleration for animated elements */
+  .gpu-accelerated,
+  .card-telegram,
+  .hover-lift,
+  .hover-scale,
+  .modal-content,
+  .dropdown-telegram,
+  .page-enter,
+  .list-item-telegram {
+    transform: translateZ(0);
+    will-change: transform, opacity;
+  }
+  
+  /* Optimize scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
