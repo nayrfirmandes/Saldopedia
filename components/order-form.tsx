@@ -830,7 +830,7 @@ export default function OrderForm() {
           <div className="mx-auto max-w-3xl">
             {/* Loading State */}
             {checkingAuth ? (
-              <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-lg md:p-8 dark:border-gray-700 dark:bg-gray-800">
+              <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-lg md:p-8 dark:border-gray-700 dark:bg-gray-800 animate-in">
                 <div className="flex flex-col items-center justify-center py-12">
                   <svg className="h-10 w-10 animate-spin text-blue-600" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -843,7 +843,7 @@ export default function OrderForm() {
               </div>
             ) : !isLoggedIn ? (
               /* Login Required Message */
-              <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-lg md:p-8 dark:border-gray-700 dark:bg-gray-800">
+              <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-lg md:p-8 dark:border-gray-700 dark:bg-gray-800 content-appear">
                 <div className="flex flex-col items-center justify-center py-8 text-center">
                   <div className="mb-5 rounded-full bg-blue-100 p-3.5 dark:bg-blue-900/30">
                     <svg className="h-10 w-10 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -910,7 +910,7 @@ export default function OrderForm() {
                 </div>
               </div>
             ) : (
-            <form onSubmit={handleSubmit} className="rounded-xl border border-gray-100 bg-white p-6 shadow-lg md:p-8 dark:border-gray-700 dark:bg-gray-800">
+            <form onSubmit={handleSubmit} className="rounded-xl border border-gray-100 bg-white p-6 shadow-lg md:p-8 dark:border-gray-700 dark:bg-gray-800 content-appear">
               {/* Saldo Info Banner */}
               <div className="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-900/20">
                 <div className="flex items-center justify-between">

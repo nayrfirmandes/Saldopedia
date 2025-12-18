@@ -67,7 +67,7 @@ export default function CryptoCard({
           {isLoading ? (
             <div className="h-5 w-28 animate-pulse rounded bg-gray-200 md:h-6 md:w-32 dark:bg-gray-700"></div>
           ) : (
-            <p className="text-base font-bold text-gray-900 md:text-lg dark:text-gray-100">
+            <p className="text-base font-bold text-gray-900 md:text-lg dark:text-gray-100 animate-in">
               Rp {price && price < 0.01 
                 ? price.toFixed(8).replace(/\.?0+$/, '') 
                 : price?.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -83,7 +83,7 @@ export default function CryptoCard({
               <div className="h-4 w-16 animate-pulse rounded bg-gray-200 md:h-5 md:w-20 dark:bg-gray-700"></div>
             ) : (
               <p
-                className={`text-xs font-semibold md:text-sm ${
+                className={`text-xs font-semibold md:text-sm animate-in ${
                   isPositive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
                 }`}
               >
@@ -100,7 +100,7 @@ export default function CryptoCard({
         {isLoading ? (
           <div className="h-4 w-24 animate-pulse rounded bg-gray-200 md:h-5 md:w-28 dark:bg-gray-700"></div>
         ) : (
-          <p className="text-xs font-semibold text-gray-900 md:text-sm dark:text-gray-100">
+          <p className="text-xs font-semibold text-gray-900 md:text-sm dark:text-gray-100 animate-in">
             ~{minCoin} {symbol}
           </p>
         )}

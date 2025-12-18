@@ -627,7 +627,72 @@
 }
 
 .animate-fade-in-up {
-  animation: fade-in-up 0.3s var(--ease-spring-out) forwards;
+  animation: fade-in-up 0.3s var(--ease-smooth-out) forwards;
+}
+
+/* ============================================
+   LOADING TO CONTENT TRANSITIONS
+   ============================================ */
+@layer utilities {
+  /* Smooth content appearance after loading */
+  .content-appear {
+    animation: contentAppear var(--duration-smooth) var(--ease-smooth-out) both;
+  }
+  
+  /* Fade out loading */
+  .loading-fade-out {
+    animation: loadingFadeOut var(--duration-fast) var(--ease-smooth) both;
+  }
+  
+  /* For conditional rendering - smooth mount */
+  .animate-in {
+    animation: animateIn var(--duration-normal) var(--ease-smooth-out) both;
+  }
+  
+  /* Skeleton to content transition */
+  .skeleton-to-content {
+    animation: skeletonToContent var(--duration-smooth) var(--ease-smooth-out) both;
+  }
+}
+
+@keyframes contentAppear {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes loadingFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes animateIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes skeletonToContent {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 /* ============================================
