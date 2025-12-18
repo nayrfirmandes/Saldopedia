@@ -1,6 +1,6 @@
 import "./css/style.css";
 import { Providers } from "@/components/providers";
-import LivechatWidget from "@/components/livechat-widget";
+import LivechatWidgetWrapper from "@/components/livechat-widget-wrapper";
 import localFont from "next/font/local";
 import { cookies } from "next/headers";
 
@@ -228,7 +228,7 @@ export default async function RootLayout({
           <div className="flex min-h-screen flex-col overflow-hidden supports-[overflow:clip]:overflow-clip">
             {children}
           </div>
-          <LivechatWidget />
+          <LivechatWidgetWrapper />
         </Providers>
       </body>
     </html>
