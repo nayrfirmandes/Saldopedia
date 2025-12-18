@@ -87,12 +87,12 @@ export function PageTransitionLoadingProvider({ children }: { children: ReactNod
     
     const fadeTimer = setTimeout(() => {
       setVisible(false);
-    }, 500);
+    }, 800);
     
     const hideTimer = setTimeout(() => {
       setLoading(false);
       loadingRef.current = false;
-    }, 700);
+    }, 1100);
 
     return () => {
       clearTimeout(fadeTimer);
@@ -188,11 +188,11 @@ export default function PageTransitionLoading() {
     
     const fadeTimer = setTimeout(() => {
       setVisible(false);
-    }, 500);
+    }, 800);
     
     const hideTimer = setTimeout(() => {
       setLoading(false);
-    }, 700);
+    }, 1100);
 
     return () => {
       clearTimeout(fadeTimer);
