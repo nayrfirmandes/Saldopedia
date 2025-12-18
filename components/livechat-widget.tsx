@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { MessageCircle, X, Send, User, Bot, Headphones } from 'lucide-react';
+import { useAuth } from '@/contexts/auth-context';
 
 interface ChatMessage {
   sender: 'user' | 'ai' | 'admin';
@@ -71,6 +72,7 @@ const SESSION_TIMEOUT_MINUTES = 10;
 const GREETING_MESSAGE = "Halo! Ada yang bisa kami bantu? Ketik pertanyaan Anda di sini.";
 
 export default function LivechatWidget() {
+  const { user, loading: authLoading } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -305,7 +307,9 @@ export default function LivechatWidget() {
     }, 200);
   };
 
-  if (!isHydrated) return null;
+  if (!isHydrated || authLoading) return null;
+  
+  if (user) return null;
 
   return (
     <>
