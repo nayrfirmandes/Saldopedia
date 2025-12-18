@@ -470,7 +470,8 @@ export default function LivechatWidget() {
                 onKeyDown={handleKeyDown}
                 placeholder="Ketik pesan..."
                 disabled={isLoading}
-                className="flex-1 px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                className="flex-1 px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                style={{ fontSize: '16px' }}
               />
               <button
                 onClick={sendMessage}
