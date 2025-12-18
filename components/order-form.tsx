@@ -910,8 +910,7 @@ export default function OrderForm() {
                 </div>
               </div>
             ) : (
-            <div className="rounded-xl border border-gray-100 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800" style={{ WebkitBackfaceVisibility: 'hidden', backfaceVisibility: 'hidden', WebkitTransform: 'translateZ(0)', transform: 'translateZ(0)' }}>
-            <form onSubmit={handleSubmit} className="p-6 md:p-8">
+            <form onSubmit={handleSubmit} className="rounded-xl border border-gray-100 bg-white p-6 shadow-lg md:p-8 dark:border-gray-700 dark:bg-gray-800">
               {/* Saldo Info Banner */}
               <div className="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-900/20">
                 <div className="flex items-center justify-between">
@@ -1829,7 +1828,6 @@ export default function OrderForm() {
                   </div>
                 </>
             </form>
-            </div>
             )}
           </div>
         </div>
