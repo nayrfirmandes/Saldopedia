@@ -11,7 +11,7 @@ const CRYPTO_LOGOS: { [key: string]: string } = {
   ETH: '/images/crypto/eth.webp',
   BNB: '/images/crypto/bnb.webp',
   SOL: '/images/crypto/sol.webp',
-  USDT: '/images/crypto/usdt.webp?v=2',
+  USDT: '/images/crypto/usdt-v2.webp',
   USDC: '/images/crypto/usdc.webp',
   MATIC: '/images/crypto/matic.webp',
   ADA: '/images/crypto/ada.webp',
