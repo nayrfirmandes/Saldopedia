@@ -5,6 +5,7 @@ import Link from "next/link";
 import Accordion from "@/components/accordion";
 import { useLanguage } from "@/contexts/language-context";
 import PageIllustration from "@/components/page-illustration";
+import SmartCtaButton from "@/components/smart-cta-button";
 
 export default function PayPalContent() {
   const { t } = useLanguage();
@@ -332,17 +333,7 @@ export default function PayPalContent() {
                 </div>
               </div>
               <div className="mt-8 text-center">
-                <Link
-                  href="/order"
-                  className="btn group bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] bg-[bottom] text-white shadow-sm hover:bg-[length:100%_150%]"
-                >
-                  <span className="relative inline-flex items-center">
-                    {t("paypalProductPage.howTo.ctaButton")}{" "}
-                    <span className="ml-1 tracking-normal text-blue-300 transition-transform group-hover:translate-x-0.5">
-                      →
-                    </span>
-                  </span>
-                </Link>
+                <SmartCtaButton orderText={t("paypalProductPage.howTo.ctaButton")} />
               </div>
             </div>
 

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import PageIllustration from "@/components/page-illustration";
 import { useLanguage } from "@/contexts/language-context";
+import SmartCtaButton from "@/components/smart-cta-button";
 
 interface RateTier {
   min: number;
@@ -240,17 +241,7 @@ export default function PricingTables() {
                   </li>
                 </ul>
                 <div className="mt-6">
-                  <Link
-                    className="btn-sm group w-full rounded-lg bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] bg-[bottom] py-2 text-white shadow-sm hover:bg-[length:100%_150%]"
-                    href="/order"
-                  >
-                    <span className="relative inline-flex items-center">
-                      {t('pricing.cta.button')}{" "}
-                      <span className="ml-1 tracking-normal text-blue-300 transition-transform group-hover:translate-x-0.5">
-                        -&gt;
-                      </span>
-                    </span>
-                  </Link>
+                  <SmartCtaButton size="sm" orderText={t('pricing.cta.button')} className="rounded-lg" />
                 </div>
               </div>
 
@@ -331,17 +322,7 @@ export default function PricingTables() {
                   </li>
                 </ul>
                 <div className="mt-6">
-                  <Link
-                    className="btn-sm group w-full rounded-lg bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] bg-[bottom] py-2 text-white shadow-sm hover:bg-[length:100%_150%]"
-                    href="/order"
-                  >
-                    <span className="relative inline-flex items-center">
-                      {t('pricing.cta.button')}{" "}
-                      <span className="ml-1 tracking-normal text-blue-300 transition-transform group-hover:translate-x-0.5">
-                        -&gt;
-                      </span>
-                    </span>
-                  </Link>
+                  <SmartCtaButton size="sm" orderText={t('pricing.cta.button')} className="rounded-lg" />
                 </div>
               </div>
 
@@ -423,17 +404,7 @@ export default function PricingTables() {
                   </li>
                 </ul>
                 <div className="mt-6">
-                  <Link
-                    className="btn-sm group w-full rounded-lg bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] bg-[bottom] py-2 text-white shadow-sm hover:bg-[length:100%_150%]"
-                    href="/order"
-                  >
-                    <span className="relative inline-flex items-center">
-                      {t('pricing.cta.button')}{" "}
-                      <span className="ml-1 tracking-normal text-blue-300 transition-transform group-hover:translate-x-0.5">
-                        -&gt;
-                      </span>
-                    </span>
-                  </Link>
+                  <SmartCtaButton size="sm" orderText={t('pricing.cta.button')} className="rounded-lg" />
                 </div>
               </div>
             </div>

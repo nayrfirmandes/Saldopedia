@@ -4,6 +4,7 @@ import PageIllustration from "@/components/page-illustration";
 import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/contexts/language-context";
+import SmartCtaButton from "@/components/smart-cta-button";
 
 export default function AboutContent() {
   const { t } = useLanguage();
@@ -262,17 +263,7 @@ export default function AboutContent() {
                 {t("aboutPage.cta.description")}
               </p>
               <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-                <Link
-                  href="/order"
-                  className="btn group w-full bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] bg-[bottom] text-white shadow-sm hover:bg-[length:100%_150%] sm:w-auto"
-                >
-                  <span className="relative inline-flex items-center">
-                    {t("aboutPage.cta.startButton")}
-                    <span className="ml-1 tracking-normal text-blue-300 transition-transform group-hover:translate-x-0.5">
-                      →
-                    </span>
-                  </span>
-                </Link>
+                <SmartCtaButton orderText={t("aboutPage.cta.startButton")} />
                 <Link
                   href="/documentation"
                   className="btn w-full bg-white text-gray-800 shadow-sm hover:bg-gray-50 sm:w-auto dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
