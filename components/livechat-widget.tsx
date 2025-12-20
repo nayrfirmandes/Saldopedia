@@ -1,8 +1,11 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { usePathname } from 'next/navigation';
 import { MessageCircle, X, Send, User, Bot, Headphones, Star, Volume2, VolumeX } from 'lucide-react';
 import { useAuth } from '@/contexts/auth-context';
+
+const AUTH_PAGES = ['/login', '/register', '/forgot-password', '/reset-password', '/verify-email'];
 
 interface ChatMessage {
   sender: 'user' | 'ai' | 'admin';
@@ -101,6 +104,7 @@ function playNotificationSound() {
 }
 
 export default function LivechatWidget() {
+  const pathname = usePathname();
   const { user, loading: authLoading } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -123,6 +127,8 @@ export default function LivechatWidget() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const prevMessagesLengthRef = useRef(0);
+  
+  const isAuthPage = AUTH_PAGES.some(page => pathname?.startsWith(page));
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -429,7 +435,7 @@ export default function LivechatWidget() {
 
   if (!isHydrated || authLoading) return null;
   
-  if (user) return null;
+  if (user || isAuthPage) return null;
 
   return (
     <>
