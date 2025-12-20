@@ -68,6 +68,7 @@ export default function HeroHome() {
   return (
     <section className="relative">
       <PageIllustration />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-white to-transparent dark:from-gray-900" />
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         {/* Hero content */}
         <div className="pb-12 pt-32 md:pb-20 md:pt-40">

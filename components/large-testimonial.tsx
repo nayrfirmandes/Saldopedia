@@ -4,8 +4,9 @@ import { LargeTestimonialClient } from "./large-testimonial-client";
 export default function LargeTestimonial() {
   return (
     <section className="relative overflow-hidden">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-t from-transparent via-gray-100/50 to-gray-100 dark:via-gray-800/50 dark:to-gray-800" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent via-gray-100/50 to-gray-100 dark:via-gray-800/50 dark:to-gray-800" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-white via-white/80 to-transparent dark:from-gray-900 dark:via-gray-900/80" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-white via-white/80 to-transparent dark:from-gray-900 dark:via-gray-900/80" />
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-gray-50/50 via-gray-100/30 to-gray-50/50 dark:from-gray-800/30 dark:via-gray-800/20 dark:to-gray-800/30" />
       <div className="mx-auto max-w-2xl px-4 sm:px-6">
         <div className="py-12 md:py-20">
           <div className="space-y-3 text-center">

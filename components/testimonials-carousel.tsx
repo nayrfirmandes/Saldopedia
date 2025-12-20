@@ -54,7 +54,7 @@ function TestimonialsCarousel() {
   const rotations = ['-rotate-2', 'rotate-1', '-rotate-1', 'rotate-2', '-rotate-2', 'rotate-1', '-rotate-1', 'rotate-2'];
 
   return (
-    <section className="relative before:pointer-events-none before:absolute before:inset-0 before:-z-10 before:h-[120%] before:bg-linear-to-b before:from-gray-100 dark:before:from-gray-800">
+    <section className="relative before:pointer-events-none before:absolute before:inset-0 before:-z-10 before:bg-gradient-to-b before:from-transparent before:via-gray-50/80 before:to-transparent dark:before:via-gray-800/40">
       <div className="pt-12 md:pt-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="mx-auto max-w-3xl text-center">
