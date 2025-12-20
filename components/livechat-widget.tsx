@@ -72,7 +72,7 @@ function renderMessageWithLinks(text: string, isUser: boolean = false) {
 }
 
 const SESSION_TIMEOUT_MINUTES = 10;
-const GREETING_MESSAGE = "Halo! Ada yang bisa kami bantu? Ketik pertanyaan Anda di sini.";
+const GREETING_MESSAGE = "Halo! Butuh bantuan? Ketik pertanyaanmu di sini.";
 
 const QUICK_REPLIES = [
   { text: "Cara beli crypto", message: "Bagaimana cara membeli cryptocurrency di Saldopedia?" },
